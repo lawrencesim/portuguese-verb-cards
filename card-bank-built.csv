@@ -38,7 +38,7 @@ medir,medindo,medido,,0,,,measure,,,meço,medes,mede,medimos,medis,medem
 vender,vendendo,vendido,,0,,,sell,,,vendo,vendes,vende,vendemos,vendeis,vendem
 correr,correndo,corrido,,0,,running,run,,,corro,corres,corre,corremos,correis,correm
 comprar,comprando,comprado,,0,,,buy,,,compro,compras,compra,compramos,comprais,compram
-terminar,terminando,terminado,,0,,,finish/end,,,termino,terminas,termina,terminamos,terminais,terminam
+terminar,terminando,terminado,,0,,,finish/end,finishes/ends,,termino,terminas,termina,terminamos,terminais,terminam
 trabalhar,trabalhando,trabalhado,,0,,,work,,,trabalho,trabalhas,trabalha,trabalhamos,trabalhais,trabalham
 começar,começando,começado,,0,,,begin/start,,,começo,começas,começa,começamos,começais,começam
 dar,dando,dado,,0,,,give,,,dou,dás,dá,damos,dais,dão
@@ -47,7 +47,7 @@ jogar,jogando,jogado,,0,,,play,,,jogo,jogas,joga,jogamos,jogais,jogam
 ganhar,ganhando,ganhado,or be gifted,0,,winning,win/gain,,,ganho,ganhas,ganha,ganhamos,ganhais,ganham
 perder,perdendo,perdido,,0,,,lose/misplace,,,perco,perdes,perde,perdemos,perdeis,perdem
 dormir,dormindo,dormido,,0,,,sleep,,,durmo,dormes,dorme,dormimos,dormis,dormem
-tocar,tocando,tocado,,0,,,touch,,,toco,tocas,toca,tocamos,tocais,tocam
+tocar,tocando,tocado,,0,,,touch,touches,,toco,tocas,toca,tocamos,tocais,tocam
 ouvir,ouvindo,ouvido,,0,,,listen,,,ouço,ouves,ouve,ouvimos,ouvis,ouvem
 lavar,lavando,lavado,,0,,,wash,,,lavo,lavas,lava,lavamos,lavais,lavam
 errar,errando,errado,,0,,,err,,,erro,erras,erra,erramos,errais,erram

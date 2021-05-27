@@ -19,7 +19,7 @@ def random_parameters():
 
 
 def get_params(no_repeats=None, no_continuous=False):
-    variations = 4
+    variations = 8
     while variations > 0:
         params = random_parameters()
         if no_continuous and params["tense"] == TENSE.PRESENT_CONTINUOUS:

@@ -30,6 +30,7 @@ def main():
         tested = []
         params = False
         redo = False
+        wrong_params = []
         to_english = bool(random.getrandbits(1))
         tested_continuous = False
 
@@ -38,14 +39,15 @@ def main():
         for j in range(2):
             params = tester.get_params(no_repeats=tested, no_continuous=tested_continuous)
             result = tester.question(bank, i, params, to_english)
+            tested.append(params)
             if params["tense"] == TENSE.PRESENT_CONTINUOUS:
                 tested_continuous = True
             tally["total"] += 1
             if not result["correct"]:
                 tally["wrong"] += 1
                 redo = True
+                wrong_params.append(params)
             else:
-                tested.append(params)
                 tally["correct"] += 1
             if to_english:
                 to_english = False
@@ -53,7 +55,7 @@ def main():
         print("")
 
         if redo:
-            tally["redo"].append(bank[i])
+            tally["redo"].append([bank[i], wrong_params])
 
     print("Words tested: {0}".format(num_tests))
     print("Total questions: {0}".format(tally["total"]))
@@ -68,25 +70,31 @@ def main():
     while len(to_redo):
         n = 0
 
-        for card in to_redo:
+        for card, wrong_params in to_redo:
             n += 1
             tested = []
             params = False
             redo = False
-            to_english = bool(random.getrandbits(1))
             tested_continuous = False
 
             print("Redo word test {0}:".format(n))
 
-            correct = 4
-            while correct > 0:
-                params = tester.get_params(no_repeats=tested, no_continuous=tested_continuous)
+            streak = 2
+            correct = 3
+            while correct > 0 or streak > 0:
+                if not to_english and len(wrong_params):
+                    params = wrong_params.pop(0)
+                else:
+                    params = tester.get_params(no_repeats=tested, no_continuous=tested_continuous)
                 result = tester.question(bank, card, params, to_english)
                 if result["correct"]:
                     tested.append(params)
                     if params["tense"] == TENSE.PRESENT_CONTINUOUS:
                         tested_continuous = True
                     correct -= 1
+                    streak -= 1
+                else:
+                    streak = 2
                 if to_english:
                     to_english = False
 
