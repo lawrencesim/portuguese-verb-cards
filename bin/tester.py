@@ -113,7 +113,7 @@ def portuguese_to_english(verbs):
     guess = guess.lower()
     answer = verbs["english"]["verb"]
     if verbs["tense"] == TENSE.INFINTIVE:
-        answer = [a.split(" ")[1:] for a in answer]
+        answer = [" ".join(a.split(" ")[1:]) for a in answer]
     return {
         "person": verbs["person"], 
         "singular": verbs["singular"], 
