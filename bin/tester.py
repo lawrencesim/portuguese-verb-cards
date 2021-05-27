@@ -54,15 +54,15 @@ def question(cardbank, card, params, to_english):
 def english_to_portuguese(verbs):
     if verbs["tense"] == TENSE.INFINTIVE:
         if verbs["english"]["hint"]:
-            guess = input("{0} ({1}) -- (inf.) ".format(
+            guess = input("{0} ({1}) > (inf.) ".format(
                 pick_one(verbs["english"]["infinitive"]), 
                 verbs["english"]["hint"]
             ))
         else:
-            guess = input("{0} -- (inf.) ".format(pick_one(verbs["english"]["infinitive"])))
+            guess = input("{0} > (inf.) ".format(pick_one(verbs["english"]["infinitive"])))
     else:
         if verbs["english"]["hint"]:
-            guess = input("{0} {1} ({2}) -- {3} ".format(
+            guess = input("{0} {1} ({2}) > {3} ".format(
                 verbs["english"]["pronoun"], 
                 pick_one(verbs["english"]["verb"]), 
                 verbs["english"]["hint"], 
@@ -94,11 +94,11 @@ def english_to_portuguese(verbs):
 def portuguese_to_english(verbs):
     if verbs["tense"] == TENSE.INFINTIVE:
         if verbs["english"]["hint"] and verbs["hint-to-eng"]:
-            guess = input("{0} ({1}) -- to ".format(verbs["portuguese"]["infinitive"], verbs["english"]["hint"]))
+            guess = input("{0} ({1}) > to ".format(verbs["portuguese"]["infinitive"], verbs["english"]["hint"]))
         else:
-            guess = input("{0} -- to ".format(verbs["portuguese"]["infinitive"]))
-    if verbs["english"]["hint"] and verbs["hint-to-eng"]:
-        guess = input("{0} {1} ({2}) -- {3} ".format(
+            guess = input("{0} > to ".format(verbs["portuguese"]["infinitive"]))
+    elif verbs["english"]["hint"] and verbs["hint-to-eng"]:
+        guess = input("{0} {1} ({2}) > {3} ".format(
             verbs["portuguese"]["pronoun"], 
             verbs["portuguese"]["verb"], 
             verbs["english"]["hint"], 
@@ -124,7 +124,7 @@ def portuguese_to_english(verbs):
         "answer": answer, 
         "answer_format": (
             ("to " if verbs["tense"] == TENSE.INFINTIVE else verbs["english"]["pronoun"]) + " " +
-            " |or| ".join(answer)
+            " (or) ".join(answer)
         ), 
         "correct": compare(answer, guess)
     }
