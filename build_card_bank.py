@@ -1,18 +1,14 @@
-import os, csv, time
+import os, csv, time, shutil
 from bin.constants import TENSE
-from bin import cardtest
+from bin import cardbank
 from bin import builder
 
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(this_dir, ".."))
-os.chdir(parent_dir)
-
-bank = cardtest.read("card-bank-basic.csv", build_forms=False)
+bank = cardbank.read("card-bank-basic.csv", build_forms=False)
 
 existing = []
 if os.path.exists("card-bank-built.csv"):
-    existing = cardtest.read("card-bank-built.csv", build_forms=False)
+    existing = cardbank.read("card-bank-built.csv", build_forms=False)
 existing_map = {}
 for card in existing:
     existing_map[card["inf"]] = card
@@ -48,6 +44,9 @@ for card in bank:
         built.append(card)
         print("{0} built".format(card["inf"]))
     time.sleep(0.25)
+
+if os.path.exists("card-bank-built.csv"):
+    shutil.copyfile("card-bank-build.csv", "card-bank-build.bkp.csv")
 
 with open("card-bank-built.csv", "w", newline="", encoding="utf-8") as csvf:
     writer = csv.DictWriter(csvf, fieldnames=builder.FIELDS)

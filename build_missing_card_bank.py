@@ -1,14 +1,10 @@
 import os, csv, time
-from bin import cardtest
+from bin import cardbank
 from bin import builder
 
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(this_dir, ".."))
-os.chdir(parent_dir)
-
-built = cardtest.read("card-bank-built.csv", build_forms=False)
-basic = cardtest.read("card-bank-basic.csv", build_forms=False)
+built = cardbank.read("card-bank-built.csv", build_forms=False)
+basic = cardbank.read("card-bank-basic.csv", build_forms=False)
 
 missing = list(set((card["inf"] for card in basic)) - set((card["inf"] for card in built)))
 

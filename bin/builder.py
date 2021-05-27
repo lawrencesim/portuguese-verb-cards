@@ -40,7 +40,7 @@ def get(infinitive, tense=TENSE.PRESENT, session=None):
         raise Exception("Tense not recognized or supported")
 
     if not session:
-        sexxion = HTMLSession()
+        session = HTMLSession()
     page = session.get(URL.format(infinitive))
     page.html.render()
 
