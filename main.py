@@ -5,7 +5,7 @@ from bin.constants import TENSE
 
 
 def main():
-    bank = CardBank("card-bank-built.csv")
+    bank = CardBank("card-bank-built.csv", "card-bank-similar.csv")
 
     num_cards = len(bank)
     num_tests = int(input("Number of words to test? (two questions per word) > "))
@@ -32,30 +32,42 @@ def main():
         redo = False
         wrong_params = []
         to_english = bool(random.getrandbits(1))
-        tested_continuous = False
+        exclude_tenses = []
 
-        print("Word test {0} of {1}:".format(n, num_tests))
+        card = bank[i]
+        if card["inf"] == "poder":
+            exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+
+        print("Word {0} of {1}:".format(n, num_tests))
 
         for j in range(2):
-            params = tester.get_params(no_repeats=tested, no_continuous=tested_continuous)
-            result = tester.question(bank, i, params, to_english)
+            params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
+            result = tester.question(bank, card, params, to_english)
+            params["tense"] = result["tense"]
+            params["person"] = result["person"]
+            params["singular"] = result["singular"]
             tested.append(params)
-            if params["tense"] == TENSE.PRESENT_CONTINUOUS:
-                tested_continuous = True
             tally["total"] += 1
             if not result["correct"]:
                 tally["wrong"] += 1
                 redo = True
                 wrong_params.append(params)
+                # don't retest present-continuous if corrected answered
+                if params["tense"] == TENSE.PRESENT_CONTINUOUS:
+                    exclude_tenses.append(params["tense"])
             else:
                 tally["correct"] += 1
+            # don't retest infinitive tense in any case
+            if params["tense"] == TENSE.INFINITIVE:
+                exclude_tenses.append(params["tense"])
+            # don't retest in portuguese-to-english format in any case
             if to_english:
                 to_english = False
 
         print("")
 
         if redo:
-            tally["redo"].append([bank[i], wrong_params])
+            tally["redo"].append([card, wrong_params])
 
     print("Words tested: {0}".format(num_tests))
     print("Total questions: {0}".format(tally["total"]))
@@ -75,26 +87,35 @@ def main():
             tested = []
             params = False
             redo = False
-            tested_continuous = False
+            exclude_tenses = []
 
-            print("Redo word test {0}:".format(n))
+            if card["inf"] == "poder":
+                exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
 
+            print("Redo word {0}:".format(n))
+
+            # min. of 3 correct answers, but must end on a streak of at least 2 correct in a row
             streak = 2
             correct = 3
             while correct > 0 or streak > 0:
                 if not to_english and len(wrong_params):
                     params = wrong_params.pop(0)
                 else:
-                    params = tester.get_params(no_repeats=tested, no_continuous=tested_continuous)
+                    params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
                 result = tester.question(bank, card, params, to_english)
+                params["tense"] = result["tense"]
+                params["person"] = result["person"]
+                params["singular"] = result["singular"]
                 if result["correct"]:
                     tested.append(params)
-                    if params["tense"] == TENSE.PRESENT_CONTINUOUS:
-                        tested_continuous = True
+                    # don't retest certain tenses for this word, if correctly solved once
+                    if params["tense"] == TENSE.PRESENT_CONTINUOUS or params["tense"] == TENSE.INFINITIVE:
+                        exclude_tenses.append(params["tense"])
                     correct -= 1
                     streak -= 1
                 else:
                     streak = 2
+                # don't retest in portuguese-to-english format in any case
                 if to_english:
                     to_english = False
 
