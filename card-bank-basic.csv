@@ -1,79 +1,81 @@
 inf,hint,hint-rules,use-eng-defs,eng-inf,eng-gerund,eng-1,eng-3,eng-p,eng-past,eng-past-perf
-fazer,,,,,,make/do,makes/does,,made/did,,made/done
-ter,,,,,,have,has,,had,
-poder,,,,be able,able,can,can,,was able,were able,been able
-usar,,,,,,use,,,,,
-pegar,get or grab,from-eng,,,,take,,,took,,taken
-levar,away or to,from-eng,,,,take,,,took,,taken
-trazer,bring,from-eng;first-def,,,,take/bring,,,took/brought,,taken/brought
-ser,"simple, essence",from-eng,,be,being,am,is,are,was,were,been
-estar,as a temp. state or condition,from-eng,,be,being,am,is,are,was,were,been
-entender,,,,,,understand,,,understood,,
-saber,as a fact,from-eng,,,,know,,,knew,,known
-conhecer,a person/place/thing,from-eng;first-def,,,,know/meet,,,knew/met,,known/met
-pensar,as a fact,from-eng,,,,think,,,thought,,
-achar,as a guess,from-eng;first-def,,,,think/guess,thinks/guesses,,thought/guessed,,
-falar,,,,,,speak/talk,,,spoke/talked,,spoken/talked
-dizer,,,,,,say/tell,,,said/told,,
-conversar,,,,,,converse/talk,,,,,
-perguntar,a question,from-eng;first-def,,,,ask/question,,,,,
-pedir,for something,from-eng;first-def,,,,ask/order,,,,,
-chegar,,,,,,arrive,,,,,
-vir,,,,,,come,,,came,,come
-voltar,,,,,,come back,,,came back,,come back
-ir,,,,,,go,goes,,went,,gone
-partir,leave,from-eng;first-def,,,,go/leave/depart,goes/leaves/departs,,went/left/departed,,gone/left/departed
-sair,outward,from-eng;first-def,,,,leave/go out,leaves/goes out,,left/went out,,left/gone out
-andar,,,,,,walk,,,,,
-caminhar,,,,,,walk,,,,,
-colocar,clothing,from-eng;second-def,1,,,place/put on/put,,,placed/put on/put,,
-botar,???,from-eng,,,,wear,,,wore,,worn
-calçar,shoes or gloves,from-eng,,,,wear,,,wore,,worn
-vestir,general clothes,from-eng,,,,wear,,,wore,,worn
-tirar,,,,,,take off,,,took off,,taken off
-ver,,,,,,see/look at/watch,sees/looks at/watches,,saw/looked at/watched,,seen/looked at/watched
-olhar,,,,,,see/look at,,,saw/looked at,,seen/looked at
-ajudar,,,,,,help,,,,,
-mostrar,,,,,,show,,,,,shown
-pagar,,,,,,pay,,,,,
-cuidar,,,,,,take care of,,,took care of,,taken care of
-esquecer,,,,,,forget,,,forgot,,forgotten
-decidir,,,,,,decide,,,,,
-medir,,,,,,measure,,,,,
-vender,,,,,,sell,,,sold,,
-correr,,,,,running,run,,,ran,,run
-comprar,,,,,,buy,,,bought,,
-terminar,,,,,,finish/end,finishes/ends,,,,
-trabalhar,,,,,,work,,,,,
-começar,,,,,,begin/start,,,began/started,,begun/started
-dar,,,,,,give,,,gave,,given
-cair,,,,,,fall,,,fell,,fallen
-jogar,,,,,,play,,,,,
-ganhar,or be gifted,from-eng,,,winning,win/gain,,,won/gained,,
-perder,,,,,,lose/misplace,,,lost/misplaced,,
-dormir,,,,,,sleep,,,slept,,
-tocar,,,,,,touch,touches,,,,
-ouvir,,,,,,hear/listen,,,heard/listened,,
-lavar,,,,,,wash,,,,,
-errar,,,,,,err,,,,,
-abrir,,,,,,open,,,,,
-aceitar,,,2,,,accept/agree/take,,,accepted/agreed/took,,accepted/agreed/taken
-doer,,,1,,,ache/hurt,,,ached/hurt,,
-cozinhar,,,,,,cook,,,,,
-comer,,,,,,eat,,,ate,,eaten
-beber,,,,,,drink,,,drank,,drunk
-ferver,,,,,,boil,,,,,
-fritar,,,,,,fry,fries,,,,
-precisar,,,,,,need,,,,,
-gostar,,,,,,like,,,,,
-amar,,,,,,love,,,,,
-ler,,,,,,read,,,read,,read
-escrever,,,,,,write,,,wrote,,written
-encontrar,,,,,,find,,,found,,
-salvar,,,,,,save,,,,,
-esperar,,,,,,wait,,,,,
-seguir,,,,,,follow,,,,,
-desculpar,,,,,,forgive,,,forgave,,forgiven
-mudar,,,,,,change,,,,,
-parar,,,,,stopping,stop,,,,,
-ligar,phone,from-eng;first-def,,,,call/phone/turn on,,,,,
+estar,as a temp. state or condition,from-eng,,be,being,am,is,are,was,been
+ser,"simple, essence",from-eng,,be,being,am,is,are,was,been
+poder,,,,be able,able,can,can,,was able,been able
+fazer,,,,,,make/do,makes/does,,made/did,made/done
+ter,,,,,,have,has,,had,had
+usar,,,,,,use,,,,
+beber,,,,,,drink,,,drank,drunk
+tomar,consume or utilize,from-eng;first-def,1,,,take/use/drink,takes/uses/drinks,,took/used/drank,taken/used/drunk
+pegar,obtain,from-eng,,,,take,,,took,taken
+trazer,from present location,from-eng,1,,,take/bring,,,took/brought,taken/brought
+levar,to present location,from-eng,1,,,bring/take,,,brought/took,brought/taken
+entender,,,,,,understand,,,understood,
+saber,as a fact,from-eng,,,,know,,,knew,known
+conhecer,a person/place/thing,from-eng;first-def,,,,know/meet,,,knew/met,known/met
+pensar,as a fact,from-eng,,,,think,,,thought,
+achar,as a guess,from-eng;first-def,,,,think/guess,thinks/guesses,,thought/guessed,
+falar,,,,,,speak/talk,,,spoke/talked,spoken/talked
+dizer,,,,,,say/tell,,,said/told,
+conversar,,,,,,converse/talk,,,,
+perguntar,a question,from-eng;first-def,,,,ask/question,,,,
+pedir,for something,from-eng;first-def,,,,ask/order,,,,
+chegar,,,,,,arrive,,,,
+vir,,,,,,come,,,came,come
+voltar,,,,,,come back,,,came back,come back
+ir,,,,,,go,goes,,went,gone
+partir,leave,from-eng;first-def,,,,go/leave/depart,goes/leaves/departs,,went/left/departed,gone/left/departed
+sair,outward,from-eng;first-def,,,,leave/go out,leaves/goes out,,left/went out,left/gone out
+ver,,,,,,see/look at/watch,sees/looks at/watches,,saw/looked at/watched,seen/looked at/watched
+olhar,,,,,,see/look at,,,saw/looked at,seen/looked at
+andar,to get somewhere,from-eng,,,,walk,,,,
+caminhar,to walk/exercise,from-eng;first-def,,,,walk/hike,,,,
+colocar,clothing,from-eng;second-def,1,,,place/put on/put,,,placed/put on/put,
+botar,???,from-eng,,,,wear,,,wore,worn
+calçar,shoes or gloves,from-eng,,,,wear,,,wore,worn
+vestir,general clothes,from-eng,,,,wear,,,wore,worn
+tirar,,,,,,take off,,,took off,taken off
+lavar,,,,,,wash,,washes,,
+limpar,,,1,,,clean/wash,cleans/washes,,,
+ajudar,,,,,,help,,,,
+mostrar,,,,,,show,,,,shown
+pagar,,,,,,pay,,,,
+cuidar,,,,,,take care of,,,took care of,taken care of
+esquecer,,,,,,forget,,,forgot,forgotten
+decidir,,,,,,decide,,,,
+medir,,,,,,measure,,,,
+vender,,,,,,sell,,,sold,
+correr,,,,,running,run,,,ran,run
+comprar,,,,,,buy,,,bought,
+terminar,,,,,,finish/end,finishes/ends,,,
+trabalhar,,,,,,work,,,,
+começar,,,,,,begin/start,,,began/started,begun/started
+dar,,,,,,give,,,gave,given
+cair,,,,,,fall,,,fell,fallen
+jogar,,,,,,play,,,,
+ganhar,or be gifted,from-eng,,,winning,win/gain,,won/gained,,
+perder,,,,,,lose/misplace,,,lost/misplaced,
+dormir,,,,,,sleep,,,slept,
+tocar,,,,,,touch,touches,,,
+ouvir,,,,,,hear/listen,,,heard/listened,
+errar,,,,,,err,,,,
+abrir,,,,,,open,,,,
+aceitar,,,2,,,accept/agree/take,,,accepted/agreed/took,accepted/agreed/taken
+doer,,,1,,,ache/hurt,,,ached/hurt,
+cozinhar,,,,,,cook,,,,
+comer,,,,,,eat,,,ate,eaten
+ferver,,,,,,boil,,,,
+fritar,,,,,,fry,fries,,,
+precisar,,,,,,need,,,,
+gostar,,,,,,like,,,,
+amar,,,,,,love,,,,
+ler,,,,,,read,,,read,read
+escrever,,,,,,write,,,wrote,written
+encontrar,,,,,,find,,,found,
+salvar,,,,,,save,,,,
+esperar,,,,,,wait,,,,
+seguir,,,,,,follow,,,,
+desculpar,,,,,,forgive,,,forgave,forgiven
+mudar,,,,,,change,,,,
+parar,,,,,stopping,stop,,,,
+ligar,phone,from-eng;first-def,,,,call/phone/turn on,,,,

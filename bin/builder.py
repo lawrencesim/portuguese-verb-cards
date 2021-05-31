@@ -10,6 +10,7 @@ SUPPLIED_FIELDS = (
     "eng-1", "eng-3", "eng-p", 
     "eng-past", "eng-past-perf"
 )
+BASIC_FIELDS = KEY_FIELD + SUPPLIED_FIELDS
 BUILT_FIELDS = (
     "gerund", "participle", 
     "present-1s", "present-2s", "present-3s", "present-1p", "present-2p", "present-3p", 
@@ -20,7 +21,7 @@ BUILT_FIELDS = (
     "imp1-2s", "imp1-3s", "imp1-1p", "imp1-2p", "imp1-3p", 
     "imp0-2s", "imp0-3s", "imp0-1p", "imp0-2p", "imp0-3p"
 )
-FIELDS = KEY_FIELD + SUPPLIED_FIELDS + BUILT_FIELDS
+FIELDS = BASIC_FIELDS + BUILT_FIELDS
 
 
 URL = "https://european-portuguese.info/conjugator/{0}"

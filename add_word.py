@@ -1,6 +1,7 @@
 import os, csv, shutil
 from bin import cardbank
 from bin import builder
+from bin.constants import VOWELS
 import build_card_bank
 
 
@@ -36,7 +37,7 @@ def main():
 
     # main definition create process in here
     card = create_word(infinitive)
-
+    
     # add card, appending if new, replacing if overwriting
     if not existing:
         bank.append(card)
@@ -77,21 +78,6 @@ def create_word(infinitive):
     eng_1s = ask_forms(type_str="present 1st person", prefix="I")
     len_forms = len(eng_1s)
 
-    # Limit English definitions used for from-English questions. That is, all definitions can be accepted as 
-    # answers when asking to translate to-English, but when asking to translate to-Portuguese, limit English 
-    # forms allowed to form question with.
-    use_english_defs = 0
-    if len_forms > 1:
-        if ask_yes_no("Do you want to limit English translations for question formation?"):
-            use_english_defs = ask_integer(
-                question="Up to which definition (by position) should be included? ({0})".format("/".join(infinitives)), 
-                nonzero=True, 
-                positive=True, 
-                maxvalue=len_forms
-            )
-            if use_english_defs == len_forms:
-                use_english_defs = 0
-
     # get 3rd person singular English forms, but use guess/default of just adding '-s' to each 1st person form
     eng_3s_guesses = []
     for form in eng_1s:
@@ -122,6 +108,11 @@ def create_word(infinitive):
     guess_past = []
     for form in eng_1s:
         words = form.split(" ")
+        for i, word in enumerate(words):
+            if word == "is":
+                words[i] = "are"
+            elif word == "are":
+                words[i] = "were"
         if words[0][-1] == "e":
             words[0] += "d"
         elif words[0][-1] == "y":
@@ -133,7 +124,22 @@ def create_word(infinitive):
 
     # guess past perfect forms as same as past forms
     guess_past = eng_past if eng_past else guess_past
-    eng_past_perf = ask_forms(type_str="past", prefix="have", guess_forms=guess_past, expected_length=len_forms)
+    eng_past_perf = ask_forms(type_str="past", prefix="had", guess_forms=guess_past, expected_length=len_forms)
+
+    # Limit English definitions used for from-English questions. That is, all definitions can be accepted as 
+    # answers when asking to translate to-English, but when asking to translate to-Portuguese, limit English 
+    # forms allowed to form question with.
+    use_english_defs = 0
+    if len_forms > 1:
+        if ask_yes_no("Do you want to limit English translations for question formation?"):
+            use_english_defs = ask_integer(
+                question="Up to which definition (by position) should be included? ({0})".format("/".join(infinitives)), 
+                nonzero=True, 
+                positive=True, 
+                maxvalue=len_forms
+            )
+            if use_english_defs == len_forms:
+                use_english_defs = 0
 
     # Define optional hint and hint rules. See `english_to_portuguese()` and `portuguese_to_english()` in 
     # bin.tester for details on hint rules as that's where it comes into play. But common rules are 'from-eng'
@@ -158,7 +164,7 @@ def create_word(infinitive):
         print("  Plural form(s)              => we {0}".format("/".join(eng_p if eng_p else eng_1s)))
         print("  Gerund form(s)              => I am {0}".format("/".join(gerunds if gerunds else guess_gerunds)))
         print("  Past form(s)                => I {0}".format("/".join(eng_past if eng_past else guess_past)))
-        print("  Past perfect form(s)        => I have {0}".format("/".join(eng_past_perf if eng_past_perf else guess_past)))
+        print("  Past perfect form(s)        => I had {0}".format("/".join(eng_past_perf if eng_past_perf else guess_past)))
     if use_english_defs:
         print("  Limit form(s) for questions => {0}".format("/".join(infinitives[:use_english_defs])))
     if hint:
@@ -168,20 +174,20 @@ def create_word(infinitive):
     # if confirmed, finish, otherwise recurse (starting over with infinitive)
     if ask_yes_no():
         return {
-            "inf":              infinitive, 
-            "hint":             hint, 
-            "hint-rules":       hint_rules if hint_rules else "", 
-            "use-english-defs": use_english_defs if use_english_defs else "", 
-            "eng-inf":          "/".join([form for form in eng_inf]) if eng_inf else "", 
-            "eng-gerund":       "/".join(gerunds) if gerunds else "", 
-            "eng-1":            "/".join(eng_1s), 
-            "eng-3":            "/".join(eng_3s) if eng_3s else "", 
-            "eng-p":            "/".join(eng_p) if eng_p else "", 
-            "eng-past":         "/".join(eng_past) if eng_past else "", 
-            "eng-past-perfect": "/".join(eng_past_perf) if eng_past_perf else ""
+            "inf":           infinitive, 
+            "hint":          hint, 
+            "hint-rules":    hint_rules if hint_rules else "", 
+            "use-eng-defs":  use_english_defs if use_english_defs else "", 
+            "eng-inf":       "/".join([form for form in eng_inf]) if eng_inf else "", 
+            "eng-gerund":    "/".join(gerunds) if gerunds else "", 
+            "eng-1":         "/".join(eng_1s), 
+            "eng-3":         "/".join(eng_3s) if eng_3s else "", 
+            "eng-p":         "/".join(eng_p) if eng_p else "", 
+            "eng-past":      "/".join(eng_past) if eng_past else "", 
+            "eng-past-perf": "/".join(eng_past_perf) if eng_past_perf else ""
         }
 
-    print("\nOkay, let's start over\n")
+    print("\nOkay, let's start over..\n")
     return create_word(infinitive=infinitive)
 
 
@@ -200,7 +206,7 @@ def ask_yes_no(question=""):
             return True
         if response == "no":
             return False
-    print("Could not understand input, type `yes` or `no`.")
+    print("Could not understand response, type `yes` or `no`.")
     return ask_yes_no(question)
 
 

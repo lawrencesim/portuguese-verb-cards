@@ -16,7 +16,7 @@ def read(card_bank_filepath, build_forms=True):
     card_bank = []
     with open(card_bank_filepath, "r", encoding="utf-8") as csvf:
         reader = csv.DictReader(csvf)
-        card_bank = [card for card in reader]
+        card_bank = [card for card in reader if "inf" in card]
 
     if not build_forms:
         return card_bank
@@ -72,10 +72,10 @@ def read(card_bank_filepath, build_forms=True):
             card["eng-past"] = tuple(card["eng-past"])
 
         # split existing, or past perfect forms same as standard past
-        if card["eng-past-perfect"]:
-            card["eng-past-perfect"] = tuple(s.strip().lower() for s in card["eng-past-perfect"].split("/"))
+        if card["eng-past-perf"]:
+            card["eng-past-perf"] = tuple(s.strip().lower() for s in card["eng-past-perf"].split("/"))
         else:
-            card["eng-past-perfect"] = card["eng-past"]
+            card["eng-past-perf"] = card["eng-past"]
 
         # gerund forms
         if card["eng-gerund"]:
@@ -150,23 +150,24 @@ class CardBank:
     similars = tuple()
 
     def __init__(self, card_bank_table, similar_table=None):
+        # read cards
         assert isinstance(card_bank_table, str)
         assert os.path.exists(card_bank_table)
         self.cards = tuple(read(card_bank_table, build_forms=True))
-
+        # find estar card, needed for continuous forms
         for card in self.cards:
             self.card_map[card["inf"]] = card
             if card["inf"] == "estar":
                 self.estar_card = card
         if not self.estar_card:
             raise Exception("No card found for 'estar' (to be)")
-
+        # read similars, removing missing verbs from group
         if similar_table:
             assert isinstance(similar_table, str)
             assert os.path.exists(similar_table)
+            similars = []
             with open(similar_table, "r", encoding="utf-8") as csvf:
                 reader = csv.reader(csvf)
-                similars = []
                 for group in reader:
                     missing_infs = []
                     for infinitive in group:
@@ -175,12 +176,20 @@ class CardBank:
                     for missing_inf in missing_infs:
                         group.remove(missing_inf)
                     similars.append(group)
-        self.similars = tuple(tuple(group) for group in similars)
-        for group in self.similars:
-            for infinitive in group:
-                self.card_map[infinitive]["similars"] = group
-
-
+            self.similars = tuple(tuple(group) for group in similars)
+            # create/append similars to verb cards
+            for group in self.similars:
+                for infinitive in group:
+                    if not infinitive in group:
+                        self.card_map[infinitive]["similars"] = group
+                    else:
+                        combined = set(self.card_map[infinitive]["similars"] + group)
+                        self.card_map[infinitive]["similars"] = tuple(combined)
+            # filter out same from similars attached to each card
+            for card in self.cards:
+                if not self.card_map["similars"]:
+                    continue
+                self.card_map["similars"] = tuple(verb for verb in self.card_map["similars"] if verb != card["inf"])
 
     def __len__(self):
         return len(self.cards)
@@ -377,7 +386,10 @@ class CardBank:
             tense (constants.TENSE): The tense to construct the verb form for. Defaults to TENSE.INFINITIVE.
         Returns:
             The English verb form(s). Note this will return a tuple[str], even if only one form, for different
-            possible translations.
+            possible translations. Note that aux. verbs (e.g. had/will/should) will not be included so that 
+            tester code can check variations of acceptable answers (e.g. had/have or should/must). This does 
+            not apply to 'to be' (always included) needed in special cases (e.g. 'was able') and continuous 
+            forms (e.g. 'are eating').
         '''
         assert person in PERSON_VALUES
         assert tense in TENSE_VALUES
@@ -397,35 +409,39 @@ class CardBank:
             if person == PERSON.THIRD:
                 return card["eng-3"]
 
-        elif tense == TENSE.IMPERFECT or tense == TENSE.PERFECT:
-            # aux. verb will be checked elsewhere for perfect tense (has/have/had)
+        elif tense == TENSE.IMPERFECT:
             if not singular or person == PERSON.SECOND:
+                forms = list(card["eng-past"])
                 # special case cause only one instance I know where past singular/plural differs
-                if "was" in card["eng-past"].split(" "):
-                    return card["eng-past"].replace("was", "were")
-                else:
-                    return card["eng-past"]
-            return card["eng-past"]
+                for i, form in enumerate(forms):
+                    words = form.split(" ")
+                    for j, word in enumerate(words):
+                        if word == "is":
+                            words[j] = "are"
+                        elif word == "are":
+                            words[j] = "were"
+                    forms[i] = " ".join(words)
+            return tuple(forms)
 
         elif tense == TENSE.PERFECT:
-            # aux. verb will be checked elsewhere for perfect tense (has/have/had)
-            return card["eng-past-perfect"]
+            # aux. verb will be checked elsewhere for perfect tense (had)
+            return card["eng-past-perf"]
 
         elif tense == TENSE.PRESENT_CONTINUOUS:
             # aux. verb required, e.g. "am/is/are eating"
             if not singular or person == PERSON.SECOND:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-p"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-p"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.FIRST:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-1"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-1"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.THIRD:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-3"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-3"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
 
@@ -433,17 +449,17 @@ class CardBank:
             # aux. verb required, e.g. "was/were working"
             if not singular or person == PERSON.SECOND:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-past-p"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-past-p"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.FIRST:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-past-1"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-past-1"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.THIRD:
                 return tuple(
-                    "{0} {1}".format(pick_one(self.estar_card["eng-past-3"]), gerund)
+                    "{0} {1}".pick_one(self.estar_card["eng-past-3"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
 

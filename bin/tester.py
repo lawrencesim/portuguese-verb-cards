@@ -158,32 +158,28 @@ def english_to_portuguese(verbs):
         # just generically show hint if no index-selective rule
         if not index_selective:
             show_hint = True
-    hint = "({0}) ".format(verbs["hint"]) if show_hint else ""
 
-    prefix = verbs["english"]["pronoun"]
-    answer_prefix = verbs["portuguese"]["pronoun"] + " "
+    prefix = [verbs["english"]["pronoun"]]
+    answer_prefix = verbs["portuguese"]["pronoun"]
     if verbs["tense"] == TENSE.INFINITIVE:
-        prefix = "to"
-        answer_prefix = " "
+        prefix = ["to"]
+        answer_prefix = False
     elif verbs["tense"] == TENSE.PERFECT:
-        if verbs["singular"] and verbs["person"] == PERSON.THIRD:
-            prefix += " has"
-        else:
-            prefix += " have"
+        prefix.append("had")
     elif verbs["tense"] == TENSE.FUTURE:
-        prefix += " will"
+        prefix.append("will")
     elif verbs["tense"] == TENSE.FUTURE_COND:
-        prefix += " will maybe"
+        prefix.append("will maybe")
     elif verbs["tense"] == TENSE.IMPERATIVE_AFM:
-        prefix += " must"
+        prefix.append("must")
     elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
-        prefix += " must not"
-        answer_prefix += "não "
-    prompt = "{0} {1} {2}>{3}".format(
-        prefix, 
+        prefix.append("must not")
+        answer_prefix += "não"
+    prompt = "{0} {1} {2}> {3}".format(
+        " ".join(prefix), 
         qverb, 
-        hint, 
-        answer_prefix
+        "({0}) ".format(verbs["hint"]) if show_hint else "", 
+        answer_prefix + " " if answer_prefix else  ""
     )
     guess = input(prompt).strip().lower()
 
@@ -214,12 +210,14 @@ def portuguese_to_english(verbs):
     show_hint = False
     if verbs["hint"] and "to-eng" in verbs["hint-rules"]:
         show_hint = True
-    hint = "({0}) ".format(verbs["hint"]) if show_hint else ""
 
     aux_verbs = None
     aux_verbs_alt = None
     if verbs["tense"] == TENSE.INFINITIVE:
-        prompt = "{0} {1}> to ".format(verbs["portuguese"]["infinitive"], hint)
+        prompt = "{0} {1}> to ".format(
+            verbs["portuguese"]["infinitive"], 
+            "({0}) ".format(verbs["hint"]) if show_hint else ""
+        )
     else:
         if verbs["tense"] == TENSE.PERFECT:
             if verbs["singular"] and verbs["person"] == PERSON.THIRD:
@@ -239,7 +237,7 @@ def portuguese_to_english(verbs):
         prompt = "{0} {1} {2}> {3} ".format(
             verbs["portuguese"]["pronoun"], 
             pick_one(verbs["portuguese"]["verbs"]), 
-            hint, 
+            "({0}) ".format(verbs["hint"]) if show_hint else "", 
             verbs["english"]["pronoun"]
         )
     guess = input(prompt).strip().lower()
@@ -248,9 +246,10 @@ def portuguese_to_english(verbs):
     if not aux_verbs:
         # no aux. verbs, just compare raw answer
         correct = compare_faster(verbs["english"]["verbs"], guess)
-    else:
+    if aux_verbs:
         # split words
         response_parts = guess.split(" ")
+        verb_parts = response_parts
         # check against first variation
         if len(response_parts)+1 == len(aux_verbs):
             correct = True
@@ -266,6 +265,9 @@ def portuguese_to_english(verbs):
                     if response_parts[i] not in words_at_loc:
                         correct = False
                         break
+        # finally check verb itself without aux. verbs
+        if correct:
+            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts))
 
     return {
         "person":   verbs["person"], 
@@ -291,10 +293,7 @@ def answer_formatted(verbs, to_english):
         if verbs["tense"] == TENSE.INFINITIVE:
             prefix = "to"
         elif verbs["tense"] == TENSE.PERFECT:
-            if verbs["person"] == PERSON.THIRD and verbs["singular"]:
-                prefix += " has"
-            else:
-                prefix += " have"
+            prefix += " had"
         elif verbs["tense"] == TENSE.FUTURE:
             prefix += " will"
         elif verbs["tense"] == TENSE.FUTURE_COND:

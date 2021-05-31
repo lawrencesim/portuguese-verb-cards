@@ -51,6 +51,7 @@ def main():
             if not result["correct"]:
                 tally["wrong"] += 1
                 redo = True
+                params["to_english"] = to_english
                 wrong_params.append(params)
                 # don't retest present-continuous if corrected answered
                 if params["tense"] == TENSE.PRESENT_CONTINUOUS:
@@ -98,8 +99,10 @@ def main():
             streak = 2
             correct = 3
             while correct > 0 or streak > 0:
-                if not to_english and len(wrong_params):
+                to_english = False
+                if len(wrong_params):
                     params = wrong_params.pop(0)
+                    to_english = params["to_english"]
                 else:
                     params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
                 result = tester.question(bank, card, params, to_english)
@@ -115,9 +118,6 @@ def main():
                     streak -= 1
                 else:
                     streak = 2
-                # don't retest in portuguese-to-english format in any case
-                if to_english:
-                    to_english = False
 
             print("")
 
