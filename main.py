@@ -95,14 +95,22 @@ def main():
 
             print("Redo word {0}:".format(n))
 
-            # min. of 3 correct answers, but must end on a streak of at least 2 correct in a row
+            # break conditions:
+            # 1. At least 3 correct answers
+            # 2. At least 2 correct in a row
+            # 3. All wrong answers have been retested (minus to-english)
             streak = 2
             correct = 3
-            while correct > 0 or streak > 0:
+            new_incorrect = []
+            while correct > 0 or streak > 0 or len(wrong_params) or len(new_incorrect):
                 to_english = False
+                was_retest = False
                 if len(wrong_params):
                     params = wrong_params.pop(0)
-                    to_english = params["to_english"]
+                    to_english = "to_english" in params and params["to_english"]
+                elif correct <= 0 and streak <= len(new_incorrect):
+                    params = new_incorrect.pop(0)
+                    was_retest = True
                 else:
                     params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
                 result = tester.question(bank, card, params, to_english)
@@ -117,7 +125,9 @@ def main():
                     correct -= 1
                     streak -= 1
                 else:
-                    streak = 2
+                    if not to_english and params not in new_incorrect:
+                        new_incorrect.append(params)
+                    streak = 2 if not was_retest else 1
 
             print("")
 

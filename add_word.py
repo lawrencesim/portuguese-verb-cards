@@ -31,7 +31,7 @@ def main():
         page.html.render()
         warning = page.html.find("#warning", first=True)
         if warning and warning.text:
-            print("Infinitive ({0}) invalid {1}\n{2}".format(infinitive, warning.text, URL.format(infinitive)))
+            print("Infinitive ({0}) invalid {1}\n{2}".format(infinitive, warning.text, builder.URL.format(infinitive)))
             exit()
         session = None
 
