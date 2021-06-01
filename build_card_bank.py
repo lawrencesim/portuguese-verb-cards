@@ -15,8 +15,8 @@ def add_build(add_cards):
 
     # read in existing card bank
     card_bank = []
-    if os.path.exists("card-bank-built.csv"):
-        card_bank = cardbank.read("card-bank-built.csv", build_forms=False)
+    if os.path.exists("bank/card-bank-built.csv"):
+        card_bank = cardbank.read("bank/card-bank-built.csv", build_forms=False)
 
     # start HTTP session for reuse
     session = builder.session()
@@ -49,12 +49,12 @@ def build_from_difference(force_rebuild=[]):
     '''Build card bank by rectifying differences in card bank basic and built.'''
 
     # read card bank basic (card bank with all basic definitions but not built out)
-    card_bank_basic = cardbank.read("card-bank-basic.csv", build_forms=False)
+    card_bank_basic = cardbank.read("bank/card-bank-basic.csv", build_forms=False)
 
     # read existing, card bank built
     existing = []
-    if os.path.exists("card-bank-built.csv"):
-        existing = cardbank.read("card-bank-built.csv", build_forms=False)
+    if os.path.exists("bank/card-bank-built.csv"):
+        existing = cardbank.read("bank/card-bank-built.csv", build_forms=False)
     existing_map = {}
     for card in existing:
         existing_map[card["inf"]] = card
@@ -124,15 +124,15 @@ def finish_build(new_card_bank, new_cards, updated_cards, errored):
     
     if new_cards or updated_cards:
         # backup
-        if os.path.exists("card-bank-built.csv"):
-            shutil.copyfile("card-bank-built.csv", "card-bank-built.bkp.csv")
-            print("Old card bank backed up as: card-bank-built.bkp.csv")
+        if os.path.exists("bank/card-bank-built.csv"):
+            shutil.copyfile("bank/card-bank-built.csv", "bank/card-bank-built.bkp.csv")
+            print("Old card bank backed up as: bank/card-bank-built.bkp.csv")
         # write new
-        with open("card-bank-built.csv", "w", newline="", encoding="utf-8") as csvf:
+        with open("bank/card-bank-built.csv", "w", newline="", encoding="utf-8") as csvf:
             writer = csv.DictWriter(csvf, fieldnames=builder.FIELDS)
             writer.writeheader()
             writer.writerows(new_card_bank)
-        print("New card bank written to: card-bank-built.csv")
+        print("New card bank written to: bank/card-bank-built.csv")
     
     if new_cards:
         print("\nNew cards created:")

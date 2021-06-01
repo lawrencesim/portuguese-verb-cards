@@ -13,8 +13,8 @@ def main():
     # check if already exists in card bank
     bank = []
     existing = False
-    if os.path.exists("card-bank-basic.csv"):
-        bank = cardbank.read("card-bank-basic.csv", build_forms=False)
+    if os.path.exists("bank/card-bank-basic.csv"):
+        bank = cardbank.read("bank/card-bank-basic.csv", build_forms=False)
         for card in bank:
             if card["inf"] == infinitive:
                 existing = True
@@ -54,16 +54,16 @@ def main():
     print("")
 
     # backup card bank basic (card bank with all basic definitions but not built out)
-    if os.path.exists("card-bank-basic.csv"):
-        shutil.copyfile("card-bank-basic.csv", "card-bank-basic.bkp.csv")
-        print("Old word list backed up as: card-bank-basic.bkp.csv")
+    if os.path.exists("bank/card-bank-basic.csv"):
+        shutil.copyfile("bank/card-bank-basic.csv", "bank/card-bank-basic.bkp.csv")
+        print("Old word list backed up as: bank/card-bank-basic.bkp.csv")
 
     # write new card bank basic
-    with open("card-bank-basic.csv", "w", newline="", encoding="utf-8") as csvf:
+    with open("bank/card-bank-basic.csv", "w", newline="", encoding="utf-8") as csvf:
         writer = csv.DictWriter(csvf, fieldnames=builder.BASIC_FIELDS)
         writer.writeheader()
         writer.writerows(bank)
-    print("New word list written to: card-bank-basic.csv")
+    print("New word list written to: bank/card-bank-basic.csv")
 
     print("")
 
