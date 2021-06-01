@@ -180,16 +180,14 @@ class CardBank:
             # create/append similars to verb cards
             for group in self.similars:
                 for infinitive in group:
-                    if not infinitive in group:
+                    if "similars" not in self.card_map[infinitive]:
                         self.card_map[infinitive]["similars"] = group
                     else:
-                        combined = set(self.card_map[infinitive]["similars"] + group)
-                        self.card_map[infinitive]["similars"] = tuple(combined)
+                        self.card_map[infinitive]["similars"] = tuple(set(self.card_map[infinitive]["similars"] + group))
             # filter out same from similars attached to each card
             for card in self.cards:
-                if not self.card_map["similars"]:
-                    continue
-                self.card_map["similars"] = tuple(verb for verb in self.card_map["similars"] if verb != card["inf"])
+                if "similars" in card:
+                    card["similars"] = tuple(verb for verb in card["similars"] if verb != card["inf"])
 
     def __len__(self):
         return len(self.cards)
@@ -431,17 +429,17 @@ class CardBank:
             # aux. verb required, e.g. "am/is/are eating"
             if not singular or person == PERSON.SECOND:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-p"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-p"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.FIRST:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-1"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-1"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.THIRD:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-3"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-3"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
 
@@ -449,17 +447,17 @@ class CardBank:
             # aux. verb required, e.g. "was/were working"
             if not singular or person == PERSON.SECOND:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-past-p"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-past-p"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.FIRST:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-past-1"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-past-1"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
             if person == PERSON.THIRD:
                 return tuple(
-                    "{0} {1}".pick_one(self.estar_card["eng-past-3"][0], gerund)
+                    "{0} {1}".format(self.estar_card["eng-past-3"][0], gerund)
                     for gerund in card["eng-gerund"]
                 )
 

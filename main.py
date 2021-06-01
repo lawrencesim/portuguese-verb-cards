@@ -5,7 +5,7 @@ from bin.constants import TENSE
 
 
 def main():
-    bank = CardBank("bank/card-bank-built.csv", "card-bank-similar.csv")
+    bank = CardBank("bank/card-bank-built.csv", "bank/card-bank-similar.csv")
 
     num_cards = len(bank)
     num_tests = int(input("Number of words to test? (two questions per word) > "))
