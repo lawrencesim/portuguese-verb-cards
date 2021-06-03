@@ -1,4 +1,4 @@
-import random
+import math, random
 from bin import tester
 from bin.cardbank import CardBank
 from bin.constants import TENSE
@@ -17,29 +17,53 @@ def main():
 
     print("")
 
+    # get cards
     test_card_indices = random.sample(range(0, num_cards), k=num_tests)
+    test_cards = []
+    test_infs = []
+    # add a few similars to test common mixups
+    similars = []
+    start_similars_at = math.ceil(num_tests*0.85)-1
+    for n, i in enumerate(test_card_indices):
+        card = None
+        # add a few similars in the end, if applicable
+        if n >= start_similars_at and len(similars):
+            group = None
+            while len(similars) and (not group or not len(group)):
+                # pop off earliest group, clean up redundants
+                group = [inf for inf in similars.pop(0) if inf not in test_infs]
+            if group and len(group):
+                card = bank[random.choice(group)]
+        # if no similars, add from random list, add its similars
+        if not card:
+            card = bank[i]
+            if "similars" in card and len(card["similars"]):
+                similars.append(card["similars"])
+        # add card
+        test_cards.append(card)
+        test_infs.append(card["inf"])
+
+    # reshuffle
+    random.shuffle(test_cards)
+
     tally = {
         "total": 0, 
         "correct": 0, 
         "wrong": 0, 
         "redo": []
     }
-    n = 0
-    for i in test_card_indices:
-        n += 1
-        tested = []
-        params = False
-        redo = False
-        wrong_params = []
+    for n, card in enumerate(test_cards):
         to_english = bool(random.getrandbits(1))
         exclude_tenses = []
-
-        card = bank[i]
         if card["inf"] == "poder":
             exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
 
-        print("Word {0} of {1}:".format(n, num_tests))
+        print("Word {0} of {1}:".format(n+1, num_tests))
 
+        tested = []
+        wrong_params = []
+        params = False
+        redo = False
         for j in range(2):
             params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
             result = tester.question(bank, card, params, to_english)
@@ -81,10 +105,7 @@ def main():
     next_redo = []
 
     while len(to_redo):
-        n = 0
-
-        for card, wrong_params in to_redo:
-            n += 1
+        for n, (card, wrong_params) in enumerate(to_redo):
             tested = []
             params = False
             redo = False
@@ -93,7 +114,7 @@ def main():
             if card["inf"] == "poder":
                 exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
 
-            print("Redo word {0}:".format(n))
+            print("Redo word {0}:".format(n+1))
 
             # break conditions:
             # 1. At least 3 correct answers

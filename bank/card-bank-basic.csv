@@ -3,6 +3,8 @@ estar,as a temp. state or condition,from-eng,,be,being,am,is,are,was,been
 ser,"simple, essence",from-eng,,be,being,am,is,are,was,been
 poder,,,,be able,able,can,can,,was able,been able
 fazer,,,,,,make/do,makes/does,,made/did,made/done
+criar,create,from-eng;first-def,,,,make/create/build,,,made/created/built,
+produzir,produce,from-eng;first-def,,,,make/produce/manufacture,,,made/produced/manufactured,
 ter,,,,,,have,has,,had,had
 usar,,,,,,use,,,,
 beber,,,,,,drink,,,drank,drunk
@@ -30,7 +32,8 @@ ver,,,,,,see/look at/watch,sees/looks at/watches,,saw/looked at/watched,seen/loo
 olhar,,,,,,see/look at,,,saw/looked at,seen/looked at
 andar,to get somewhere,from-eng,,,,walk,,,,
 caminhar,to walk/exercise,from-eng;first-def,,,,walk/hike,,,,
-colocar,clothing,from-eng;second-def,1,,,place/put on/put,,,placed/put on/put,
+pôr,,,,,putting/setting,put/set,,,put/set,
+colocar,clothing,from-eng;second-def,1,,placing/putting,place/put on/put,,,placed/put on/put,
 botar,???,from-eng,,,,wear,,,wore,worn
 calçar,shoes or gloves,from-eng,,,,wear,,,wore,worn
 vestir,general clothes,from-eng,,,,wear,,,wore,worn
@@ -38,9 +41,9 @@ tirar,,,,,,take off,,,took off,taken off
 lavar,,,,,,wash,,washes,,
 limpar,,,1,,,clean/wash,cleans/washes,,,
 ajudar,,,,,,help,,,,
+cuidar,,,,,,take care of,,,took care of,taken care of
 mostrar,,,,,,show,,,,shown
 pagar,,,,,,pay,,,,
-cuidar,,,,,,take care of,,,took care of,taken care of
 esquecer,,,,,,forget,,,forgot,forgotten
 decidir,,,,,,decide,,,,
 medir,,,,,,measure,,,,
@@ -73,10 +76,18 @@ ler,,,,,,read,,,read,read
 escrever,,,,,,write,,,wrote,written
 encontrar,,,,,,find,,,found,
 salvar,,,,,,save,,,,
-esperar,,,,,,wait,,,,
+esperar,,,,,,wait/expect/hope,,,,
 seguir,,,,,,follow,,,,
 desculpar,,,,,,forgive,,,forgave,forgiven
 mudar,,,,,,change,,,,
 parar,,,,,stopping,stop,,,,
 ligar,phone,from-eng;first-def,,,,call/phone/turn on,,,,
 desligar,,,,,,turn off,,,,
+nadar,,,,,swimming/bathing,swim/bathe,,,swam/bathed,
+tentar,,,,,,try/attempt,tries/attempts,,,
+pesar,,,,,,weigh,,,,
+deixar,,,,,letting/allowing,let/allow,,,let/allowed,
+evitar,,,,,,avoid/prevent,,,,
+viver,,,,,,live/experience,,,,
+entrar,,,1,,entering/getting inside,enter/get inside,,,entered/got inside,entered/gotten inside
+melhorar,,,,,improving/getting better,improve/get better,,,improved/got better,improved/gotten better

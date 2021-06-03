@@ -1,4 +1,5 @@
 ser,estar
+fazer,produzir,criar
 levar,trazer
 tomar,levar,pegar
 tomar,beber
@@ -9,6 +10,8 @@ chegar,vir,voltar
 ir,sair,partir
 ver,olhar
 andar,caminhar
-botar,colçar,vestir
+pôr,colocar
+botar,coloçar,vestir
 pedir,perguntar
+lavar,nadar
 limpar,lavar
