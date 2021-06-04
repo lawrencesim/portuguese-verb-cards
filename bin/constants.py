@@ -16,13 +16,14 @@ ENG_PRONOUNS = (
 
 TENSE = SimpleNamespace(
     INFINITIVE=0, 
-    PRESENT=1, 
-    PRESENT_CONTINUOUS=1.5, 
-    IMPERFECT=2, 
-    IMPERFECT_CONTINUOUS=2.5, 
-    PERFECT=3, 
-    FUTURE=5, 
-    FUTURE_COND=6, 
+    PRESENT=10, 
+    PRESENT_CONTINUOUS=11, 
+    IMPERFECT=20, 
+    IMPERFECT_CONTINUOUS=21, 
+    PERFECT=30, 
+    FUTURE_SIMPLE=50, 
+    FUTURE_FORMAL=52,
+    FUTURE_COND=55, 
     IMPERATIVE_NEG=90, 
     IMPERATIVE_AFM=91
 )
@@ -36,7 +37,8 @@ DEFAULT_TENSE_WEIGHTS = (
     0, # imperfect
     0, # imperfect continuous
     0, # perfect
-    0, # future
+    1, # future simple
+    0, # future formal
     0, # future conditional
     0, # imperative negative
     0  # imperative affirmative
@@ -52,5 +54,7 @@ SPECIAL_CHARS = {
     "ê": "e", 
     "ê": "e", 
     "í": "i", 
-    "ó": "o"
+    "ó": "o", 
+    "õ": "o", 
+    "ô": "o"
 }

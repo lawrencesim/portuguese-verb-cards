@@ -147,6 +147,7 @@ class CardBank:
     cards = tuple()
     card_map = {}
     estar_card = None
+    ir_card = None
     similars = tuple()
 
     def __init__(self, card_bank_table, similar_table=None):
@@ -154,13 +155,17 @@ class CardBank:
         assert isinstance(card_bank_table, str)
         assert os.path.exists(card_bank_table)
         self.cards = tuple(read(card_bank_table, build_forms=True))
-        # find estar card, needed for continuous forms
+        # find estar and ir cards, needed for continuous and simple-future forms respectively
         for card in self.cards:
             self.card_map[card["inf"]] = card
             if card["inf"] == "estar":
                 self.estar_card = card
+            elif card["inf"] == "ir":
+                self.ir_card = card
         if not self.estar_card:
             raise Exception("No card found for 'estar' (to be)")
+        if not self.ir_card:
+            raise Exception("No card found for 'ir' (to go)")
         # read similars, removing missing verbs from group
         if similar_table:
             assert isinstance(similar_table, str)
@@ -326,7 +331,9 @@ class CardBank:
             attr = "imperfect-"
         elif tense == TENSE.PERFECT:
             attr = "perfect-"
-        elif tense == TENSE.FUTURE:
+        elif tense == TENSE.FUTURE_SIMPLE:
+            attr = "present-"
+        elif tense == TENSE.FUTURE_FORMAL:
             attr = "future-"
         elif tense == TENSE.FUTURE_COND:
             attr = "futcond-"
@@ -359,6 +366,9 @@ class CardBank:
         if tense == TENSE.PRESENT_CONTINUOUS or tense == TENSE.IMPERFECT_CONTINUOUS:
             # in continuous forms, estar aux. verb required, always return tuple
             return ("{0} {1}".format(self._get_verb(self.estar_card, attr)[0], card["gerund"]),)
+        elif tense == TENSE.FUTURE_SIMPLE:
+            # ir + infinitive
+            return ("{0} {1}".format(self._get_verb(self.ir_card, attr)[0], card["inf"]),)
         else:
             return self._get_verb(card, attr)
 
@@ -398,14 +408,18 @@ class CardBank:
             # 'to' prefix will be included in answer prompt (portuguese infinitives are obvious)
             return card["eng-inf"]
 
-        elif tense == TENSE.PRESENT or TENSE == TENSE.FUTURE or TENSE == TENSE.FUTURE_COND:
-            # aux. verbs will be checked elsewhere for future tenses (will/will maybe/maybe will)
+        elif tense == TENSE.PRESENT:
             if not singular or person == PERSON.SECOND:
                 return card["eng-p"]
             if person == PERSON.FIRST:
                 return card["eng-1"]
             if person == PERSON.THIRD:
                 return card["eng-3"]
+
+        elif tense >= TENSE.FUTURE_SIMPLE and tense <= TENSE.FUTURE_COND:
+            # future always uses singular forms
+            # aux. verbs will be checked elsewhere for future tenses (will/would)
+            return card["eng-1"]
 
         elif tense == TENSE.IMPERFECT:
             if not singular or person == PERSON.SECOND:

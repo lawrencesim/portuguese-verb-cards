@@ -65,11 +65,14 @@ def main():
         params = False
         redo = False
         for j in range(2):
+            # test with random parameters
             params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
             result = tester.question(bank, card, params, to_english)
+            # because test may change params, if they don't make sense, use latest before appending
             params["tense"] = result["tense"]
             params["person"] = result["person"]
             params["singular"] = result["singular"]
+            # add to tally
             tested.append(params)
             tally["total"] += 1
             if not result["correct"]:
@@ -124,30 +127,39 @@ def main():
             correct = 3
             new_incorrect = []
             while correct > 0 or streak > 0 or len(wrong_params) or len(new_incorrect):
+
                 to_english = False
                 was_retest = False
                 if len(wrong_params):
+                    # start with wrong parameters from original test
                     params = wrong_params.pop(0)
                     to_english = "to_english" in params and params["to_english"]
                 elif correct <= 0 and streak <= len(new_incorrect):
+                    # if nearing break conditions, retest new incorrects from this retrest
                     params = new_incorrect.pop(0)
                     was_retest = True
                 else:
+                    # get new, random parameters
                     params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
+
                 result = tester.question(bank, card, params, to_english)
                 params["tense"] = result["tense"]
                 params["person"] = result["person"]
                 params["singular"] = result["singular"]
+
                 if result["correct"]:
                     tested.append(params)
                     # don't retest certain tenses for this word, if correctly solved once
                     if params["tense"] == TENSE.PRESENT_CONTINUOUS or params["tense"] == TENSE.INFINITIVE:
                         exclude_tenses.append(params["tense"])
+                    # de-increment towards break conditions
                     correct -= 1
                     streak -= 1
                 else:
-                    if not to_english and params not in new_incorrect:
+                    # add to resting incorrects (with some exceptions)
+                    if not to_english and not was_retest:
                         new_incorrect.append(params)
+                    # if on retests, can end up single streak, otherwise need to end on 2-streak
                     streak = 2 if not was_retest else 1
 
             print("")

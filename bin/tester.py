@@ -100,7 +100,7 @@ def _question(verbs, to_english, dont_check_similars=False):
     result = portuguese_to_english(verbs) if to_english else english_to_portuguese(verbs)
 
     if result["correct"]:
-        if result["guess"] in result["answers"]:
+        if to_english or result["guess"] in result["answers"]:
             print("Correct!")
         else:
             print("Correct! But mind the accent(s): {0}".format(answer_formatted(verbs, to_english)))
@@ -166,10 +166,10 @@ def english_to_portuguese(verbs):
         answer_prefix = False
     elif verbs["tense"] == TENSE.PERFECT:
         prefix.append("had")
-    elif verbs["tense"] == TENSE.FUTURE:
+    elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
         prefix.append("will")
     elif verbs["tense"] == TENSE.FUTURE_COND:
-        prefix.append("will maybe")
+        prefix.append("would")
     elif verbs["tense"] == TENSE.IMPERATIVE_AFM:
         prefix.append("must")
     elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
@@ -224,11 +224,10 @@ def portuguese_to_english(verbs):
                 aux_verbs = (("has","had"),)
             else:
                 aux_verbs = (("have", "had"),)
-        elif verbs["tense"] == TENSE.FUTURE:
+        elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             aux_verbs = (("will",),)
         elif verbs["tense"] == TENSE.FUTURE_COND:
-            aux_verbs = (("will",), ("maybe"))
-            aux_verbs_alt = (("maybe",), ("will"))
+            aux_verbs = (("would"),)
         elif verbs["tense"] == TENSE.IMPERATIVE_AFM:
             aux_verbs = (("must", "should"))
         elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
@@ -251,7 +250,7 @@ def portuguese_to_english(verbs):
         response_parts = guess.split(" ")
         verb_parts = response_parts
         # check against first variation
-        if len(response_parts)+1 == len(aux_verbs):
+        if len(response_parts)-1 == len(aux_verbs):
             correct = True
             for i, words_at_loc in enumerate(aux_verbs):
                 if response_parts[i] not in words_at_loc:
@@ -267,7 +266,7 @@ def portuguese_to_english(verbs):
                         break
         # finally check verb itself without aux. verbs
         if correct:
-            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts))
+            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts[1:]))
 
     return {
         "person":   verbs["person"], 
@@ -294,10 +293,10 @@ def answer_formatted(verbs, to_english):
             prefix = "to"
         elif verbs["tense"] == TENSE.PERFECT:
             prefix += " had"
-        elif verbs["tense"] == TENSE.FUTURE:
+        elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             prefix += " will"
         elif verbs["tense"] == TENSE.FUTURE_COND:
-            prefix += " will maybe"
+            prefix += " would"
         elif verbs["tense"] == TENSE.IMPERATIVE_AFM:
             prefix += " should"
         elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
