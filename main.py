@@ -1,6 +1,6 @@
 import sys, math, random
 from bin import tester
-from bin.cardbank import CardBank, get_exclude_tenses
+from bin.cardbank import CardBank
 from bin.constants import TENSE, TENSE_VALUES, TENSE_GROUPS
 
 
@@ -87,7 +87,7 @@ def main(options=None):
     }
     for n, card in enumerate(test_cards):
         to_english = bool(random.getrandbits(1))
-        exclude_tenses = get_exclude_tenses(card, default_exclude_tenses[:])
+        exclude_tenses = tester.get_exclude_tenses(card, default_exclude_tenses[:])
 
         print("Word {0} of {1}:".format(n+1, num_tests))
 
@@ -149,7 +149,7 @@ def main(options=None):
             tested = []
             params = False
             redo = False
-            exclude_tenses = get_exclude_tenses(card, default_exclude_tenses[:])
+            exclude_tenses = tester.get_exclude_tenses(card, default_exclude_tenses[:])
 
             print("Redo word {0}:".format(n+1))
 
@@ -227,7 +227,7 @@ if __name__ == "__main__":
                 in_arg = rename[in_arg]
         else:
             args[in_arg] = arg.strip()
-            in_arg = False
+            in_arg = None
     if in_arg:
         args[in_arg] = True
     if "help" in args:

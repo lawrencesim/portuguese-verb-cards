@@ -62,6 +62,31 @@ def get_params(no_repeats=None, exclude_tenses=None):
     return params
 
 
+def get_exclude_tenses(card, append_to=None):
+    '''Get list of tenses to exclude. This is used to handle special cases of words that don't make sense in 
+    certain tenses. E.g. 'poder' (to be) in imperative.
+    Params:
+        card (dict): ord/card definition from CardBank.
+        append_to (list[constant.TENSE], optional): If supplied, existing list of tenses to append to
+    Returns:
+        List of tenses to exclude.
+    '''
+    exclude_tenses = append_to if append_to else []
+    add_exclude = []
+
+    # imperative doesn't make sense with 'to be able' (e.g. 'he must can')
+    if card["inf"] == "poder":
+        add_exclude = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+    # while technically possible, just awkward (e.g. 'I had had')
+    elif card["inf"] == "ter" or card["inf"] == "haver":
+        add_exclude = [TENSE.PERFECT]
+
+    for exclude in add_exclude:
+        if exclude not in exclude_tenses:
+            exclude_tenses.append(exclude)
+    return exclude_tenses
+
+
 def question(cardbank, card, params, to_english):
     '''Ask question. Use this function as entry point to ask question.
     Params:
@@ -166,7 +191,15 @@ def english_to_portuguese(verbs):
         answer_prefix = False
     elif verbs["tense"] == TENSE.PERFECT:
         prefix.append("had")
-    elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
+    elif verbs["tense"] == TENSE.FUTURE_SIMPLE:
+        if not verbs["singular"] or verbs["person"] == PERSON.SECOND:
+            prefix.append("are")
+        elif verbs["person"] == PERSON.FIRST:
+            prefix.append("am")
+        else:
+            prefix.append("is")
+        prefix.append("going to")
+    elif verbs["tense"] == TENSE.FUTURE_FORMAL:
         prefix.append("will")
     elif verbs["tense"] == TENSE.FUTURE_COND:
         prefix.append("would")

@@ -17,7 +17,7 @@ entender,,,,,,understand,,,understood,
 saber,as a fact,from-eng,,,,know,,,knew,known
 conhecer,a person/place/thing,from-eng;first-def,,,,know/meet,,,knew/met,known/met
 pensar,as a fact,from-eng,,,,think,,,thought,
-achar,as a guess,from-eng;first-def,,,,think/guess,thinks/guesses,,thought/guessed,
+achar,as a guess,from-eng;first-def,,,,think/guess/find,thinks/guesses/find,,thought/guessed/found,
 falar,,,,,,speak/talk,,,spoke/talked,spoken/talked
 dizer,,,,,,say/tell,,,said/told,
 conversar,,,,,,converse/talk,,,,
@@ -43,6 +43,10 @@ lavar,,,,,,wash,,washes,,
 limpar,,,1,,,clean/wash,cleans/washes,,,
 ajudar,,,,,,help,,,,
 cuidar,,,,,,take care of,,,took care of,taken care of
+amar,,,,,,love,,,,
+adorar,,,1,,,adore/love,,,,
+gostar,,,,,,like,,,,
+precisar,,,,,,need,,,,
 mostrar,,,,,,show,,,,shown
 pagar,,,,,,pay,,,,
 esquecer,,,,,,forget,,,forgot,forgotten
@@ -70,9 +74,6 @@ cozinhar,,,,,,cook,,,,
 comer,,,,,,eat,,,ate,eaten
 ferver,,,,,,boil,,,,
 fritar,,,,,,fry,fries,,,
-precisar,,,,,,need,,,,
-gostar,,,,,,like,,,,
-amar,,,,,,love,,,,
 ler,,,,,,read,,,read,read
 escrever,,,,,,write,,,wrote,written
 encontrar,,,,,,find,,,found,

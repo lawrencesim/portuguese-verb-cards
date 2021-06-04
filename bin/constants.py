@@ -37,7 +37,7 @@ DEFAULT_TENSE_WEIGHTS = (
     0, # imperfect
     0, # imperfect continuous
     0, # perfect
-    1, # future simple
+    2, # future simple
     0, # future formal
     0, # future conditional
     0, # imperative negative
