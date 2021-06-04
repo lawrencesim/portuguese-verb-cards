@@ -29,6 +29,7 @@ voltar,,,,,,come back,,,came back,come back
 ir,,,,,,go,goes,,went,gone
 partir,leave,from-eng;first-def,,,,go/leave/depart,goes/leaves/departs,,went/left/departed,gone/left/departed
 sair,outward,from-eng;first-def,,,,leave/go out,leaves/goes out,,left/went out,left/gone out
+deixar,behind,from-eng;first-def,,,leaving/letting/allowing,leave/let/allow,,,left/let/allowed,
 ver,,,,,,see/look at/watch,sees/looks at/watches,,saw/looked at/watched,seen/looked at/watched
 olhar,,,,,,see/look at,,,saw/looked at,seen/looked at
 andar,to get somewhere,from-eng,,,,walk,,,,
@@ -88,7 +89,6 @@ desligar,,,,,,turn off,,,,
 nadar,,,,,swimming/bathing,swim/bathe,,,swam/bathed,
 tentar,,,,,,try/attempt,tries/attempts,,,
 pesar,,,,,,weigh,,,,
-deixar,,,,,letting/allowing,let/allow,,,let/allowed,
 evitar,,,,,,avoid/prevent,,,,
 viver,,,,,,live/experience,,,,
 entrar,,,1,,entering/getting inside,enter/get inside,,,entered/got inside,entered/gotten inside

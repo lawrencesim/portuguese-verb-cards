@@ -1,7 +1,5 @@
 import os, csv, shutil
-from bin import ask
-from bin import cardbank
-from bin import builder
+from bin import ask, guess, cardbank, builder
 from bin.constants import VOWELS
 import build_card_bank
 
@@ -80,14 +78,7 @@ def create_word(infinitive):
     len_forms = len(eng_1s)
 
     # get 3rd person singular English forms, but use guess/default of just adding '-s' to each 1st person form
-    eng_3s_guesses = []
-    for form in eng_1s:
-        words = form.split(" ")
-        if word[0][-1] == "s"
-            words[0] += "es"
-        else:
-            words[0] += "s"
-        eng_3s_guesses.append(" ".join(words))
+    eng_3s_guesses = [guess.eng_plural(form) for form in eng_1s]
     eng_3s = ask_forms(type_str="present 3rd person", prefix="s/he", guess_forms=eng_3s_guesses, expected_length=len_forms)
 
     # get plural English forms (also 2nd person), use guess/default of 1st person forms
@@ -95,35 +86,15 @@ def create_word(infinitive):
 
     # get infinitive forms, use guess/default of 1st person forms
     eng_inf = ask_forms(type_str="infinitive", prefix="to", guess_forms=eng_1s, expected_length=len_forms)
+    infinitives = eng_inf if eng_inf else eng_1s
 
     # guess gerund forms, use guess/default by adding '-ing' to infinitives (with one heuristic of dropping 
     # last 'e')
-    guess_gerunds = []
-    infinitives = eng_inf if eng_inf else eng_1s
-    for form in infinitives:
-        words = form.split(" ")
-        if len(words[0]) >= 3 and words[0][-1] == "e" and words[0][-2] not in VOWELS:
-            words[0] = words[0][:-1]
-        words[0] = words[0] + "ing"
-        guess_gerunds.append(" ".join(words).strip())
+    guess_gerunds = [guess.eng_gerund(inf) for inf in infinitives]
     gerunds = ask_forms(type_str="gerund", prefix="I am", guess_forms=guess_gerunds, expected_length=len_forms)
 
     # guess past forms with -ed suffix to present 1st person singular
-    guess_past = []
-    for form in eng_1s:
-        words = form.split(" ")
-        for i, word in enumerate(words):
-            if word == "is":
-                words[i] = "are"
-            elif word == "are":
-                words[i] = "were"
-        if words[0][-1] == "e":
-            words[0] += "d"
-        elif words[0][-1] == "y":
-            words[0] = words[0][:-1] + "ied"
-        else:
-            words[0] += "ed"
-        guess_past.append(" ".join(words))
+    guess_past = [guess.eng_past(form) for form in eng_1s]
     eng_past = ask_forms(type_str="past", prefix="I", guess_forms=guess_past, expected_length=len_forms)
 
     # guess past perfect forms as same as past forms
@@ -182,7 +153,7 @@ def create_word(infinitive):
             "hint":          hint, 
             "hint-rules":    hint_rules if hint_rules else "", 
             "use-eng-defs":  use_english_defs if use_english_defs else "", 
-            "eng-inf":       "/".join([form for form in eng_inf]) if eng_inf else "", 
+            "eng-inf":       "/".join(eng_inf) if eng_inf else "", 
             "eng-gerund":    "/".join(gerunds) if gerunds else "", 
             "eng-1":         "/".join(eng_1s), 
             "eng-3":         "/".join(eng_3s) if eng_3s else "", 

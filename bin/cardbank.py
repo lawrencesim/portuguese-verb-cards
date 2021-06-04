@@ -1,5 +1,5 @@
 from .constants import *
-from .misc import pick_one
+from . import guess
 import os, csv, random
 
 
@@ -12,7 +12,6 @@ def read(card_bank_filepath, build_forms=True):
     Returns:
         List of word definitions (as list[dict]).
     '''
-
     card_bank = []
     with open(card_bank_filepath, "r", encoding="utf-8") as csvf:
         reader = csv.DictReader(csvf)
@@ -22,76 +21,44 @@ def read(card_bank_filepath, build_forms=True):
         return card_bank
 
     for card in card_bank:
-        # question formation rules
+        # question formation and answer hint rules
+        card["use-eng-defs"] = int(card["use-eng-defs"]) if card["use-eng-defs"] else 0
         if card["hint-rules"]:
             card["hint-rules"] = tuple(s.strip().lower() for s in card["hint-rules"].split(";"))
         else:
             card["hint-rules"] = tuple()
-        card["use-eng-defs"] = int(card["use-eng-defs"]) if card["use-eng-defs"] else 0
-
         # split by multiple forms
         card["eng-1"] = tuple(s.strip().lower() for s in card["eng-1"].split("/"))
-
-        # split existing, or infinitive form with 'to' prefix
+        # split existing, or same as singular from singular 1st person forms
         if card["eng-inf"]:
             card["eng-inf"] = tuple(s.strip().lower() for s in card["eng-inf"].split("/"))
         else:
             card["eng-inf"] = card["eng-1"]
-
-        # split existing, or third person form same as first period with +'s'
+        # split existing, or dynamically create from singular 1st person forms
         if card["eng-3"]:
             card["eng-3"] = tuple(s.strip().lower() for s in card["eng-3"].split("/"))
         else:
-            card["eng-3"] = []
-            for form in card["eng-1"]:
-                words = form.split(" ")
-                if words[0][-1] == "s":
-                    words[0] += "es"
-                else:
-                    words[0] += "s"
-                card["eng-3"].append(" ".join(words))
-            card["eng-3"] = tuple(card["eng-3"])
-
-        # split existing, or plural form same as singular 1st person
+            card["eng-3"] = tuple(guess.eng_plural(form) for form in card["eng-1"])
+        # split existing, or same as singular 1st person forms
         if card["eng-p"]:
             card["eng-p"] = tuple(s.strip().lower() for s in card["eng-p"].split("/"))
         else:
             card["eng-p"] = card["eng-1"]
-
-        # split existing past form, or add -ed to singular 1st person present
+        # split existing, or dynamically create from singular 1st person forms
         if card["eng-past"]:
             card["eng-past"] = tuple(s.strip().lower() for s in card["eng-past"].split("/"))
         else:
-            card["eng-past"] = []
-            for form in card["eng-1"]:
-                words = form.split(" ")
-                if words[0][-1] == "e":
-                    words[0] += "d"
-                elif words[0][-1] == "y":
-                    words[0] = words[0][:-1] + "ied"
-                else:
-                    words[0] += "ed"
-                card["eng-past"].append(" ".join(words))
-            card["eng-past"] = tuple(card["eng-past"])
-
-        # split existing, or past perfect forms same as standard past
+            card["eng-past"] = tuple(guess.eng_plural(form) for form in card["eng-1"])
+        # split existing, or same as standard past forms
         if card["eng-past-perf"]:
             card["eng-past-perf"] = tuple(s.strip().lower() for s in card["eng-past-perf"].split("/"))
         else:
             card["eng-past-perf"] = card["eng-past"]
-
-        # gerund forms
+        # split existing, or dynamically create from infinitive forms
         if card["eng-gerund"]:
             card["eng-gerund"] = tuple(s.strip().lower() for s in card["eng-gerund"].split("/"))
         else:
-            gerunds = []
-            for form in card["eng-inf"]:
-                words = form.split(" ")
-                if len(words[0]) >= 3 and words[0][-1] == "e" and words[0][-2] not in VOWELS:
-                    words[0] = words[0][:-1]
-                words[0] = words[0] + "ing"
-                gerunds.append(" ".join(words).strip())
-            card["eng-gerund"] = tuple(gerunds)
+            card["eng-gerund"] = tuple(guess.eng_gerund(form) for form in card["eng-inf"])
 
     return card_bank
 
@@ -146,7 +113,6 @@ class CardBank:
         estar_card (dict): Card for 'estar', necessary for building other verb forms in certain tenses.
         similars (tuple[tuple[str]]): Similar groups of synonyms in Portuguese.
     '''
-
     cards = tuple()
     card_map = {}
     estar_card = None
