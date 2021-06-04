@@ -268,6 +268,16 @@ class CardBank:
         if (tense == TENSE.IMPERATIVE_AFM or tense == TENSE.IMPERATIVE_NEG) and person == PERSON.FIRST and singular:
             person = PERSON.SECOND
 
+        card = self.get(card)
+
+        # special case, only makes sense in infinitive or third person
+        special_case = False
+        if card["inf"] == "acontecer":
+            if tense != TENSE.INFINITIVE:
+                special_case = True
+                person = PERSON.THIRD
+                singular = True
+
         verbs = {
             "person": person, 
             "singular": singular, 
@@ -276,9 +286,18 @@ class CardBank:
             "english": {}, 
             "portuguese": {}
         }
+        pronouns = None
 
-        pronouns = get_pronouns(person=person, singular=singular)
-        card = self.get(card)
+        # special case, only makes sense with 'it'
+        if special_case:
+            if card["inf"] == "acontecer":
+                pronouns = {
+                    "portuguese": "ele", 
+                    "english": "it"
+                }
+
+        if not pronouns:
+            pronouns = get_pronouns(person=person, singular=singular)
 
         verbs["portuguese"]["infinitive"] = card["inf"]
         verbs["portuguese"]["verbs"] = self.get_portuguese_verb(card, person=person, singular=singular, tense=tense)

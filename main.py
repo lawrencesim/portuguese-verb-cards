@@ -1,12 +1,35 @@
-import math, random
+import sys, math, random
 from bin import tester
 from bin.cardbank import CardBank
-from bin.constants import TENSE
+from bin.constants import TENSE, TENSE_VALUES, TENSE_GROUPS
 
 
-def main():
+def main(options=None):
+    options = options if options else {}
+
+    # option to limit tenses to group specified
+    default_tense_group = False
+    default_exclude_tenses = []
+    if "tense" in options:
+        try:
+            default_tense_group = getattr(TENSE_GROUPS, options["tense"].upper())
+        except:
+            raise Exception("Bad argument. Tense group '{0}' is invalid.".format(options["tense"]))
+        default_exclude_tenses = [tense for tense in TENSE_VALUES if tense not in default_tense_group]
+
+    # option to set num of questions
+    num_questions = 2
+    if default_tense_group == TENSE_GROUPS.INFINITIVE:
+        num_questions = 1
+    elif "num-questions" in options:
+        num_questions = int(options["num-questions"])
+        if num_questions < 1:
+            raise Exception("Bad argument. Number of questions must be at least 1.")
+
+    # read card bank
     bank = CardBank("bank/card-bank-built.csv", "bank/card-bank-similar.csv")
 
+    # ask number of words to test
     num_cards = len(bank)
     num_tests = int(input("Number of words to test? (two questions per word) > "))
     if num_tests < 1:
@@ -18,7 +41,8 @@ def main():
     print("")
 
     # get cards
-    test_card_indices = random.sample(range(0, num_cards), k=num_tests)
+    all_card_indices = range(0, num_cards)
+    test_card_indices = random.sample(all_card_indices, k=num_tests)
     test_cards = []
     test_infs = []
     # add a few similars to test common mixups
@@ -37,6 +61,15 @@ def main():
         # if no similars, add from random list, add its similars
         if not card:
             card = bank[i]
+            # special case to exclude (pick random replacement)
+            if default_tense_group == TENSE_GROUPS.INFINITIVE and card["inf"] == "poder":
+                card = None
+                ibreak = 100
+                while not card and ibreak > 0:
+                    i = random.choice(all_card_indices)
+                    ibreak -= 1
+                    if i not in test_card_indices and bank[i]["inf"] not in test_infs:
+                        card = bank[i]
             if "similars" in card and len(card["similars"]):
                 similars.append(card["similars"])
         # add card
@@ -54,9 +87,12 @@ def main():
     }
     for n, card in enumerate(test_cards):
         to_english = bool(random.getrandbits(1))
-        exclude_tenses = []
+        exclude_tenses = default_exclude_tenses[:]
+
+        # special case to exclude as imperative doesn't make sense with "to be able" (e.g. "he must can")
+        # note when picking random words, must make sure 'poder' isn't possible when restricting to imperative
         if card["inf"] == "poder":
-            exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+            exclude_tenses += [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
 
         print("Word {0} of {1}:".format(n+1, num_tests))
 
@@ -64,7 +100,10 @@ def main():
         wrong_params = []
         params = False
         redo = False
-        for j in range(2):
+        for j in range(num_questions):
+            # make sure we're not excluding everything..
+            if len(exclude_tenses) == len(TENSE_VALUES):
+                exclude_tenses = default_exclude_tenses[:]
             # test with random parameters
             params = tester.get_params(no_repeats=tested, exclude_tenses=exclude_tenses)
             result = tester.question(bank, card, params, to_english)
@@ -80,11 +119,11 @@ def main():
                 redo = True
                 params["to_english"] = to_english
                 wrong_params.append(params)
-                # don't retest present-continuous if corrected answered
-                if params["tense"] == TENSE.PRESENT_CONTINUOUS:
-                    exclude_tenses.append(params["tense"])
             else:
                 tally["correct"] += 1
+                # don't retest present-continuous if correctly answered
+                if params["tense"] == TENSE.PRESENT_CONTINUOUS:
+                    exclude_tenses.append(params["tense"])
             # don't retest infinitive tense in any case
             if params["tense"] == TENSE.INFINITIVE:
                 exclude_tenses.append(params["tense"])
@@ -101,6 +140,9 @@ def main():
     print("Total questions: {0}".format(tally["total"]))
     print("Total correct: {0}".format(tally["correct"]))
     print("Accuracy: {0:.0f}%".format(100*tally["correct"]/tally["total"]))
+    
+    if "skip-retest" in options:
+        return
 
     print("")
 
@@ -112,10 +154,10 @@ def main():
             tested = []
             params = False
             redo = False
-            exclude_tenses = []
+            exclude_tenses = default_exclude_tenses[:]
 
             if card["inf"] == "poder":
-                exclude_tenses = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+                exclude_tenses += [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
 
             print("Redo word {0}:".format(n+1))
 
@@ -127,6 +169,9 @@ def main():
             correct = 3
             new_incorrect = []
             while correct > 0 or streak > 0 or len(wrong_params) or len(new_incorrect):
+
+                if len(exclude_tenses) == len(TENSE_VALUES):
+                    exclude_tenses = default_exclude_tenses[:]
 
                 to_english = False
                 was_retest = False
@@ -173,4 +218,46 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = {}
+    rename = {
+        "h": "help", 
+        "t": "tense", 
+        "n": "num-questions", 
+        "s": "skip-retest"
+    }
+    in_arg = None
+    for arg in sys.argv[1:]:
+        if arg.startswith("-"):
+            if in_arg:
+                args[in_arg] = True
+            in_arg = arg.lstrip("-").rstrip()
+            if in_arg in rename:
+                in_arg = rename[in_arg]
+        else:
+            args[in_arg] = arg.strip()
+            in_arg = False
+    if in_arg:
+        args[in_arg] = True
+    if "help" in args:
+        print("""
+Portuguese Verb Cards
+-----------------------------------------------------------------------------
+Created this script to test Portuguese verbs as I didn't like most flash card
+software. 
+
+The main entry point may also be provided with a few special parameters. 
+Parameter names are prefixed by a hyphen. Parameters that require a value 
+should be follow by the value passed as that parameter.
+
+    -h | -help          What you're using right now! Shows help information.
+    -t | -tense         To limit testing to a specific tense, follow with the 
+                        tense group name. Recognized values are 'infinitive', 
+                        'present', 'future', 'past', 'imperfect', 'perfect', 
+                        and 'imperative'.
+    -n | -num-questions Default num. of questions per word (not including  
+                        retest section) is two. Use this to increase or 
+                        decrease.
+    -s | -skip-retest   Simply add this parameter to skip the retest portion.
+""")
+    else:
+        main(args)

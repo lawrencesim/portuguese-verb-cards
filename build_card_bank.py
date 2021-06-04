@@ -79,7 +79,7 @@ def build_from_difference(force_rebuild=[]):
                 if not field in existing_card or not existing_card[field]:
                     rebuild = True
                     break
-            # if not rebuilding, just updat the supplied fields, which doesn't affect build fields
+            # if not rebuilding, just update the supplied fields, which doesn't affect build fields
             update = False
             for field in builder.SUPPLIED_FIELDS:
                 if rebuild:

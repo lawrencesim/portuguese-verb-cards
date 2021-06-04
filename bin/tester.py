@@ -213,32 +213,44 @@ def portuguese_to_english(verbs):
 
     aux_verbs = None
     aux_verbs_alt = None
+
     if verbs["tense"] == TENSE.INFINITIVE:
         prompt = "{0} {1}> to ".format(
             verbs["portuguese"]["infinitive"], 
             "({0}) ".format(verbs["hint"]) if show_hint else ""
         )
+
     else:
         if verbs["tense"] == TENSE.PERFECT:
             if verbs["singular"] and verbs["person"] == PERSON.THIRD:
                 aux_verbs = (("has","had"),)
             else:
-                aux_verbs = (("have", "had"),)
+                aux_verbs = (("have","had"),)
         elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             aux_verbs = (("will",),)
+            if verbs["tense"] == TENSE.FUTURE_SIMPLE:
+                if not verbs["singular"] or verbs["person"] == PERSON.SECOND:
+                    alt_to_be = "are"
+                elif verbs["person"] == PERSON.FIRST:
+                    alt_to_be = "am"
+                else:
+                    alt_to_be = "is"
+                aux_verbs_alt = ((alt_to_be,),("going",),("to",))
         elif verbs["tense"] == TENSE.FUTURE_COND:
             aux_verbs = (("would"),)
         elif verbs["tense"] == TENSE.IMPERATIVE_AFM:
-            aux_verbs = (("must", "should"))
+            aux_verbs = (("must","should"),)
         elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
-            aux_verbs = (("must", "should"), ("not",))
-            aux_verbs_alt = (("mustn't", "shouldn't"),)
+            aux_verbs = (("must","should"),("not",))
+            aux_verbs_alt = (("mustn't","shouldn't"),)
+
         prompt = "{0} {1} {2}> {3} ".format(
             verbs["portuguese"]["pronoun"], 
             pick_one(verbs["portuguese"]["verbs"]), 
             "({0}) ".format(verbs["hint"]) if show_hint else "", 
             verbs["english"]["pronoun"]
         )
+        
     guess = input(prompt).strip().lower()
 
     correct = False
@@ -250,23 +262,21 @@ def portuguese_to_english(verbs):
         response_parts = guess.split(" ")
         verb_parts = response_parts
         # check against first variation
-        if len(response_parts)-1 == len(aux_verbs):
-            correct = True
-            for i, words_at_loc in enumerate(aux_verbs):
+        for check_aux_verbs in (aux_verbs, aux_verbs_alt):
+            if len(response_parts)-1 != len(check_aux_verbs):
+                continue
+            incorrect = False
+            for i, words_at_loc in enumerate(check_aux_verbs):
                 if response_parts[i] not in words_at_loc:
-                    correct = False
+                    incorrect = True
                     break
-        # check against second variation
-        if not correct and aux_verbs_alt:
-            if len(response_parts)+1 == len(aux_verbs_alt):
+            if not incorrect:
                 correct = True
-                for i, words_at_loc in enumerate(aux_verbs_alt):
-                    if response_parts[i] not in words_at_loc:
-                        correct = False
-                        break
+                response_parts = response_parts[len(check_aux_verbs):]
+                break
         # finally check verb itself without aux. verbs
         if correct:
-            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts[1:]))
+            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts))
 
     return {
         "person":   verbs["person"], 
