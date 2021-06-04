@@ -1,4 +1,5 @@
 import os, csv, shutil
+from bin import ask
 from bin import cardbank
 from bin import builder
 from bin.constants import VOWELS
@@ -21,7 +22,7 @@ def main():
                 break
     if existing:
         # if existing, confirm overwriting/revising
-        if not ask_yes_no("'{0}' already exists. Overwrite?".format(infinitive)):
+        if not ask.yes_no("'{0}' already exists. Overwrite?".format(infinitive)):
             exit()
     else:
         # otherwise, check valid infinitive by checking conjugator website accepts it
@@ -82,7 +83,10 @@ def create_word(infinitive):
     eng_3s_guesses = []
     for form in eng_1s:
         words = form.split(" ")
-        words[0] += "s"
+        if word[0][-1] == "s"
+            words[0] += "es"
+        else:
+            words[0] += "s"
         eng_3s_guesses.append(" ".join(words))
     eng_3s = ask_forms(type_str="present 3rd person", prefix="s/he", guess_forms=eng_3s_guesses, expected_length=len_forms)
 
@@ -131,8 +135,8 @@ def create_word(infinitive):
     # forms allowed to form question with.
     use_english_defs = 0
     if len_forms > 1:
-        if ask_yes_no("Do you want to limit English translations for question formation?"):
-            use_english_defs = ask_integer(
+        if ask.yes_no("Do you want to limit English translations for question formation?"):
+            use_english_defs = ask.integer(
                 question="Up to which definition (by position) should be included? ({0})".format("/".join(infinitives)), 
                 nonzero=True, 
                 positive=True, 
@@ -147,12 +151,12 @@ def create_word(infinitive):
     # showing hints with certain English definitions when used in question.
     hint = ""
     hint_rules = ""
-    if ask_yes_no("Do you want to add a hint/clarification note?"):
+    if ask.yes_no("Do you want to add a hint/clarification note?"):
         print("Enter hint/clarification note.")
         hint = input("> ").strip()
     if hint:
         print
-        hint_rules = ask_yes_no("Show the hint/clarification note in Portuguese to English tests?")
+        hint_rules = ask.yes_no("Show the hint/clarification note in Portuguese to English tests?")
 
     # double-check all parameters
     print("Does the following all look correct?")
@@ -172,7 +176,7 @@ def create_word(infinitive):
         print("  Hint rules                  => {0}".format("yes" if hint_rules else "no"))
 
     # if confirmed, finish, otherwise recurse (starting over with infinitive)
-    if ask_yes_no():
+    if ask.yes_no():
         return {
             "inf":           infinitive, 
             "hint":          hint, 
@@ -191,52 +195,7 @@ def create_word(infinitive):
     return create_word(infinitive=infinitive)
 
 
-def ask_yes_no(question=""):
-    '''Ask yes/no question and parse input until acceptable answer given.'''
-    if question:
-        print(question)
-    response = input("> ").strip().lower()
-    if len(response) == 1:
-        if response == "y":
-            return True
-        if response == "n":
-            return False
-    else:
-        if response == "yes":
-            return True
-        if response == "no":
-            return False
-    print("Could not understand response, type `yes` or `no`.")
-    return ask_yes_no(question)
-
-
-def ask_integer(question="", positive=False, nonzero=False, minvalue=None, maxvalue=None):
-    '''Ask integer question and parse input until acceptable answer given.'''
-    if question:
-        print(question)
-    response = input("> ").strip().lower()
-    try:
-        response = int(response)
-        if nonzero and response == 0:
-            print("Response must be nonzero.")
-            return ask_integer(question, positive, nonzero, minvalue, maxvalue)
-        elif positive and response < 0:
-            print("Response must be a positive number.")
-            return ask_integer(question, positive, nonzero, minvalue, maxvalue)
-        elif minvalue is not None and response < minvalue:
-            print("Response is less than maximum allowed value of {0}.".format(minvalue))
-            return ask_integer(question, positive, nonzero, minvalue, maxvalue)
-        elif maxvalue is not None and response > maxvalue:
-            print("Response is greater than maximum allowed value of {0}.".format(maxvalue))
-            return ask_integer(question, positive, nonzero, minvalue, maxvalue)
-        else:
-            return response
-    except:
-        print("Could interpret your response as a whole number.")
-        return ask_integer(question, positive, nonzero, minvalue, maxvalue)
-
-
-def ask_forms(type_str="", prefix="", guess_forms=None, expected_length=0, repeat=False):
+def ask_forms(type_str="", same_line=False, prefix="", guess_forms=None, expected_length=0, repeat=False):
     '''Ask verb forms question and parse input until acceptable answer given.'''
     if repeat:
         if isinstance(repeat, str):
@@ -253,23 +212,23 @@ def ask_forms(type_str="", prefix="", guess_forms=None, expected_length=0, repea
                 question += "\n  {0} {1}".format(prefix, "/".join(guess_forms))
             else:
                 question += "\n  {0}".format("/".join(guess_forms))
-            if ask_yes_no(question):
+            if ask.yes_no(question):
                 return ""
             question = "Enter unique {0} verb form[s] (add multiple separated by a forward-slash '/').".format(type_str)
         print(question)
     if prefix:
-        forms = input("> {0} ".format(prefix))
+        input_forms = input("> {0} ".format(prefix))
     else:
-        forms = input("> ")
-    forms = [form.strip().lower() for form in forms.split("/")]
-    forms = [form for form in forms if len(form)]
-    if not forms:
+        input_forms = input("> ")
+    input_forms = [form.strip().lower() for form in input_forms.split("/")]
+    input_forms = [form for form in input_forms if len(form)]
+    if not input_forms:
         print("Invalid (empty) input, try again..")
         return ask_forms(expected_length=expected_length, repeat=question, prefix=prefix)
-    if expected_length and len(forms) != expected_length:
+    if expected_length and len(input_forms) != expected_length:
         print("Invalid input length, {0} variations expected, try again..".format(expected_length))
         return ask_forms(expected_length=expected_length, repeat=question, prefix=prefix)
-    return forms
+    return input_forms
 
 
 if __name__ == "__main__":

@@ -45,7 +45,10 @@ def read(card_bank_filepath, build_forms=True):
             card["eng-3"] = []
             for form in card["eng-1"]:
                 words = form.split(" ")
-                words[0] += "s"
+                if words[0][-1] == "s":
+                    words[0] += "es"
+                else:
+                    words[0] += "s"
                 card["eng-3"].append(" ".join(words))
             card["eng-3"] = tuple(card["eng-3"])
 

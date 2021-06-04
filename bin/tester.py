@@ -1,5 +1,6 @@
 from .constants import *
 from .misc import pick_one, compare_faster
+from . import ask
 import random
 
 
@@ -214,7 +215,7 @@ def english_to_portuguese(verbs):
         "({0}) ".format(verbs["hint"]) if show_hint else "", 
         answer_prefix + " " if answer_prefix else  ""
     )
-    guess = input(prompt).strip().lower()
+    guess = ask.basic(question=prompt, same_line=True, allow_empty=False)
 
     return {
         "person":   verbs["person"], 
@@ -284,7 +285,7 @@ def portuguese_to_english(verbs):
             verbs["english"]["pronoun"]
         )
         
-    guess = input(prompt).strip().lower()
+    guess = ask.basic(question=prompt, same_line=True, allow_empty=False)
 
     correct = False
     if not aux_verbs:

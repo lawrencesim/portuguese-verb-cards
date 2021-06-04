@@ -1,4 +1,5 @@
 import sys, math, random
+from bin import ask
 from bin import tester
 from bin.cardbank import CardBank
 from bin.constants import TENSE, TENSE_VALUES, TENSE_GROUPS
@@ -31,12 +32,13 @@ def main(options=None):
 
     # ask number of words to test
     num_cards = len(bank)
-    num_tests = int(input("Number of words to test? ({0} questions per word) > ".format(num_questions)))
-    if num_tests < 1:
-        raise Exception("Must specify at least one test")
-    elif num_tests > num_cards:
-        num_tests = num_cards
-        print("More tests than exists cards. Number of words set to max ({0}).".format(num_cards))
+    num_tests = ask.integer(
+        question="Number of words to test? ({0} questions per word) > ".format(num_questions), 
+        same_line=True, 
+        positive=True, 
+        nonzero=True, 
+        maxvalue=num_cards
+    )
 
     print("")
 
