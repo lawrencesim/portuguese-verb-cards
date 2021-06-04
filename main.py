@@ -1,6 +1,6 @@
 import sys, math, random
 from bin import tester
-from bin.cardbank import CardBank
+from bin.cardbank import CardBank, get_exclude_tenses
 from bin.constants import TENSE, TENSE_VALUES, TENSE_GROUPS
 
 
@@ -31,7 +31,7 @@ def main(options=None):
 
     # ask number of words to test
     num_cards = len(bank)
-    num_tests = int(input("Number of words to test? (two questions per word) > "))
+    num_tests = int(input("Number of words to test? ({0} questions per word) > ".format(num_questions)))
     if num_tests < 1:
         raise Exception("Must specify at least one test")
     elif num_tests > num_cards:
@@ -87,7 +87,7 @@ def main(options=None):
     }
     for n, card in enumerate(test_cards):
         to_english = bool(random.getrandbits(1))
-        exclude_tenses = cardbank.exclude_tenses(card, default_exclude_tenses[:])
+        exclude_tenses = get_exclude_tenses(card, default_exclude_tenses[:])
 
         print("Word {0} of {1}:".format(n+1, num_tests))
 
@@ -149,7 +149,7 @@ def main(options=None):
             tested = []
             params = False
             redo = False
-            exclude_tenses = cardbank.exclude_tenses(card, default_exclude_tenses[:])
+            exclude_tenses = get_exclude_tenses(card, default_exclude_tenses[:])
 
             print("Redo word {0}:".format(n+1))
 

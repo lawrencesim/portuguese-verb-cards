@@ -127,7 +127,7 @@ def get_pronouns(person=PERSON.FIRST, singular=True):
     }
 
 
-def exclude_tenses(card, append_to=None):
+def get_exclude_tenses(card, append_to=None):
     exclude_tenses = append_to if not append_to else []
     add_exclude = []
 
