@@ -87,12 +87,7 @@ def main(options=None):
     }
     for n, card in enumerate(test_cards):
         to_english = bool(random.getrandbits(1))
-        exclude_tenses = default_exclude_tenses[:]
-
-        # special case to exclude as imperative doesn't make sense with "to be able" (e.g. "he must can")
-        # note when picking random words, must make sure 'poder' isn't possible when restricting to imperative
-        if card["inf"] == "poder":
-            exclude_tenses += [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+        exclude_tenses = cardbank.exclude_tenses(card, default_exclude_tenses[:])
 
         print("Word {0} of {1}:".format(n+1, num_tests))
 
@@ -154,10 +149,7 @@ def main(options=None):
             tested = []
             params = False
             redo = False
-            exclude_tenses = default_exclude_tenses[:]
-
-            if card["inf"] == "poder":
-                exclude_tenses += [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+            exclude_tenses = cardbank.exclude_tenses(card, default_exclude_tenses[:])
 
             print("Redo word {0}:".format(n+1))
 
@@ -240,14 +232,24 @@ if __name__ == "__main__":
         args[in_arg] = True
     if "help" in args:
         print("""
+------------------------------------------------------------------------------
 Portuguese Verb Cards
------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 Created this script to test Portuguese verbs as I didn't like most flash card
-software. 
+software. Test a set of randomly chosen Portuguese verbs in different forms 
+and tenses. 
 
-The main entry point may also be provided with a few special parameters. 
-Parameter names are prefixed by a hyphen. Parameters that require a value 
-should be follow by the value passed as that parameter.
+Answer checking rules:
+  - Special characters are not required, and will be dynamically matched to 
+    standard English vowel (though hint to mind the accents will appear).
+  - Wrong answer due to synonym will be given one more chance to try again.
+  - While there is some support for alternative helper verbs, generally stick
+    to 'has', had', or 'have' (perfect); 'will' (future); 'would' (future 
+    conditional); and 'must' or 'must not' (imperative).
+
+The script may also be provided with a few special parameters. Parameter names
+are prefixed by a hyphen. Parameters that require a value should be follow by 
+the value passed as that parameter.
 
     -h | -help          What you're using right now! Shows help information.
     -t | -tense         To limit testing to a specific tense, follow with the 
@@ -257,7 +259,7 @@ should be follow by the value passed as that parameter.
     -n | -num-questions Default num. of questions per word (not including  
                         retest section) is two. Use this to increase or 
                         decrease.
-    -s | -skip-retest   Simply add this parameter to skip the retest portion.
+    -s | -skip-retest   Add this parameter to skip the retest portion.
 """)
     else:
         main(args)

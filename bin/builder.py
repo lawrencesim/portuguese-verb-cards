@@ -39,7 +39,7 @@ _TENSE_TABLE_MAP = {
     "Presente":              TENSE.PRESENT, 
     "Pretérito Perfeito":    TENSE.PERFECT, 
     "Pretérito Imperfeito":  TENSE.IMPERFECT, 
-    "Futuro":                TENSE.FUTURE, 
+    "Futuro":                TENSE.FUTURE_FORMAL, 
     "(Futuro do Pretérito)": TENSE.FUTURE_COND, 
     "Afirmativo":            TENSE.IMPERATIVE_AFM, 
     "Negativo":              TENSE.IMPERATIVE_NEG
@@ -123,7 +123,7 @@ def build(card, tense_maps):
             tense_key = "imperfect"
         elif tense == TENSE.PERFECT:
             tense_key = "perfect"
-        elif tense == TENSE.FUTURE:
+        elif tense == TENSE.FUTURE_FORMAL:
             tense_key = "future"
         elif tense == TENSE.FUTURE_COND:
             tense_key = "futcond"

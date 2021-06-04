@@ -127,6 +127,23 @@ def get_pronouns(person=PERSON.FIRST, singular=True):
     }
 
 
+def exclude_tenses(card, append_to=None):
+    exclude_tenses = append_to if not append_to else []
+    add_exclude = []
+
+    # imperative doesn't make sense with 'to be able' (e.g. 'he must can')
+    if card["inf"] == "poder":
+        add_exclude = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
+    # while technically possible, just awkward (e.g. 'I had had')
+    elif card["inf"] == "ter" or card["inf"] == "haver":
+        add_exclude = [TENSE.PERFECT]
+
+    for exclude in add_exclude:
+        if exclude not in exclude_tenses:
+            exclude_tenses.append(exclude)
+    return exclude_tenses
+
+
 class CardBank:
     '''
     Card bank and handler. Is iterable. Can be accessed like list/tuple or dictionary by index or key value 
