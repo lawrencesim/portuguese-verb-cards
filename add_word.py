@@ -121,13 +121,25 @@ def create_word(infinitive):
     # (for only showing hint in English-to-Portuguese questions) and 'first-def', 'second-def', etc. for only 
     # showing hints with certain English definitions when used in question.
     hint = ""
-    hint_rules = ""
+    hint_rules = []
     if ask.yes_no("Do you want to add a hint/clarification note?"):
         print("Enter hint/clarification note.")
         hint = input("> ").strip()
     if hint:
-        print
-        hint_rules = ask.yes_no("Show the hint/clarification note in Portuguese to English tests?")
+        hint_to_eng = False
+        hint_from_eng = False
+        if ask.yes_no("Show the hint/clarification note in translate-to-Portuguese questions?"):
+            hint_rules.append("from-eng")
+            hint_from_eng = True
+        if ask.yes_no("Show the hint/clarification note in translate-to-English questions?"):
+            hint_rules.append("to-eng")
+            hint_to_eng = True
+        # if both are true then no point as shown in both
+        if hint_from_eng and hint_to_eng:
+            hint_rules = []
+        # limiting hints to certain defintions
+        elif hint_from_eng and len(infinitives) and ask.yes_no("Limit hint being shown only to specific English translations?"):
+            hint_rules += ask_limit_hints(infinitives)
 
     # double-check all parameters
     print("Does the following all look correct?")
@@ -144,14 +156,14 @@ def create_word(infinitive):
         print("  Limit form(s) for questions => {0}".format("/".join(infinitives[:use_english_defs])))
     if hint:
         print("  Hint/clarification          => {0}".format(hint))
-        print("  Hint rules                  => {0}".format("yes" if hint_rules else "no"))
+        print("  Hint rules                  => {0}".format(";".join(hint_rules)))
 
     # if confirmed, finish, otherwise recurse (starting over with infinitive)
     if ask.yes_no():
         return {
             "inf":           infinitive, 
             "hint":          hint, 
-            "hint-rules":    hint_rules if hint_rules else "", 
+            "hint-rules":    ";".join(hint_rules), 
             "use-eng-defs":  use_english_defs if use_english_defs else "", 
             "eng-inf":       "/".join(eng_inf) if eng_inf else "", 
             "eng-gerund":    "/".join(gerunds) if gerunds else "", 
@@ -200,6 +212,30 @@ def ask_forms(type_str="", same_line=False, prefix="", guess_forms=None, expecte
         print("Invalid input length, {0} variations expected, try again..".format(expected_length))
         return ask_forms(expected_length=expected_length, repeat=question, prefix=prefix)
     return input_forms
+
+
+def ask_limit_hints(infinitives):
+    print("For which definitions (by number/position) do you want to limit it for? Type all that apply, separated by a comma, semicolon, or space.")
+    print("  " + ", ".join("({0}) {1}".format(i+1, form) for i, form in enumerate(infinitives)))
+    responses = input("> ").replace(";", " ").replace(",", " ").strip().lower().split()
+    try:
+        responses = list(set(int(x) for x in responses))
+    except:
+        print("Could not interpret response, make sure answers are numbers.")
+        return ask_limit_hints(infinitives)
+    num_defs = len(infinitives)
+    if any(x <= 0 for x in responses):
+        print("Invalid position found. Position values must be > 0.")
+        return ask_limit_hints(infinitives)
+    if any(x > num_defs for x in responses):
+        print("Invalid position found. Position value found greater than length of definitions.")
+        return ask_limit_hints(infinitives)
+    add_rules = []
+    hint_names_by_pos = ["", "first-def", "second-def", "third-def", "fourth-def", "fifth-def"]
+    for x in responses:
+        if x in hint_names_by_pos:
+            add_rules += hint_names_by_pos[x]
+    return add_rules
 
 
 if __name__ == "__main__":

@@ -407,7 +407,11 @@ class CardBank:
         elif tense >= TENSE.FUTURE_SIMPLE and tense <= TENSE.FUTURE_COND:
             # future always uses singular forms
             # aux. verbs will be checked elsewhere for future tenses (will/would)
-            return card["eng-1"]
+            # special case for 'to be' or 'to be able'
+            if card["inf"] in ("ser", "estar", "poder"):
+                return card["eng-inf"]
+            else:
+                return card["eng-1"]
 
         elif tense == TENSE.IMPERFECT:
             if not singular or person == PERSON.SECOND:

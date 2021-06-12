@@ -3,7 +3,7 @@ from .constants import VOWELS
 
 def eng_plural(singular_form):
     words = singular_form.split(" ")
-    if word[0][-1] == "s":
+    if words[0][-1] == "s":
         words[0] += "es"
     else:
         words[0] += "s"
@@ -25,10 +25,11 @@ def eng_past(singular_form):
             words[i] = "are"
         elif word == "are":
             words[i] = "were"
-    if words[0][-1] == "e":
-        words[0] += "d"
-    elif words[0][-1] == "y":
-        words[0] = words[0][:-1] + "ied"
-    else:
-        words[0] += "ed"
+        elif i == 0:
+            if word[-1] == "e":
+                words[i] += "d"
+            elif word[-1] == "y":
+                words[i] = word[:-1] + "ied"
+            else:
+                words[i] += "ed"
     return " ".join(words)

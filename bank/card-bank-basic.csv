@@ -1,12 +1,13 @@
 inf,hint,hint-rules,use-eng-defs,eng-inf,eng-gerund,eng-1,eng-3,eng-p,eng-past,eng-past-perf
+poder,,,,be able,able,can,can,,was able,been able
 estar,as a temp. state or condition,from-eng,,be,being,am,is,are,was,been
 ser,"simple, essence",from-eng,,be,being,am,is,are,was,been
-poder,,,,be able,able,can,can,,was able,been able
+ficar,location,from-eng;first-def,,be/stay/become,being/staying/becoming,am/stay/become,is/stays/becomes,are/stay/become,was/stayed/became,been/stayed/become
+ter,owns,from-eng,,,,have,has,,had,
+haver,presence,from-eng,,,,have,has,,had,
 fazer,,,,,,make/do,makes/does,,made/did,made/done
 criar,create,from-eng;first-def,,,,make/create/build,,,made/created/built,
 produzir,produce,from-eng;first-def,,,,make/produce/manufacture,,,made/produced/manufactured,
-ter,owns,from-eng,,,,have,has,,had,
-haver,presence,from-eng,,,,have,has,,had,
 usar,,,,,,use,,,,
 beber,,,,,,drink,,,drank,drunk
 tomar,consume or utilize,from-eng;first-def,1,,,take/use/drink,takes/uses/drinks,,took/used/drank,taken/used/drunk
@@ -94,3 +95,8 @@ viver,,,,,,live/experience,,,,
 entrar,,,1,,entering/getting inside,enter/get inside,,,entered/got inside,entered/gotten inside
 melhorar,,,,,improving/getting better,improve/get better,,,improved/got better,improved/gotten better
 acontecer,,from-eng,,,,happen,,,,
+chamar,,,,,,call,,,,
+manter,,,,,,keep,,,kept,
+aprender,,,,,,learn,,,,
+deitar,down,from-eng;first-def,,,lying/laying down,lie/lay down,,,lied/laid down,
+rir,,,,,,laugh,,,,
