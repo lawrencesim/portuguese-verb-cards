@@ -48,7 +48,7 @@ def read(card_bank_filepath, build_forms=True):
         if card["eng-past"]:
             card["eng-past"] = tuple(s.strip().lower() for s in card["eng-past"].split("/"))
         else:
-            card["eng-past"] = tuple(guess.eng_plural(form) for form in card["eng-1"])
+            card["eng-past"] = tuple(guess.eng_past(form) for form in card["eng-1"])
         # split existing, or same as standard past forms
         if card["eng-past-perf"]:
             card["eng-past-perf"] = tuple(s.strip().lower() for s in card["eng-past-perf"].split("/"))

@@ -19,6 +19,7 @@ saber,as a fact,from-eng,,,,know,,,knew,known
 conhecer,a person/place/thing,from-eng;first-def,,,,know/meet,,,knew/met,known/met
 pensar,as a fact,from-eng,,,,think,,,thought,
 achar,as a guess,from-eng;first-def,,,,think/guess/find,thinks/guesses/find,,thought/guessed/found,
+encontrar,,,,,,find,,,found,
 falar,,,,,,speak/talk,,,spoke/talked,spoken/talked
 dizer,,,,,,say/tell,,,said/told,
 conversar,,,,,,converse/talk,,,,
@@ -41,7 +42,7 @@ botar,???,from-eng,,,,wear,,,wore,worn
 calçar,shoes or gloves,from-eng,,,,wear,,,wore,worn
 vestir,general clothes,from-eng,,,,wear,,,wore,worn
 tirar,,,,,,take off,,,took off,taken off
-lavar,,,,,,wash,,washes,,
+lavar,,,,,,wash,washes,,,
 limpar,,,1,,,clean/wash,cleans/washes,,,
 ajudar,,,,,,help,,,,
 cuidar,,,,,,take care of,,,took care of,taken care of
@@ -58,6 +59,7 @@ vender,,,,,,sell,,,sold,
 correr,,,,,running,run,,,ran,run
 comprar,,,,,,buy,,,bought,
 terminar,,,,,,finish/end,finishes/ends,,,
+acabar,,,,,,end/finish,ends/finishes,,,
 trabalhar,,,,,,work,,,,
 começar,,,,,,begin/start,,,began/started,begun/started
 dar,,,,,,give,,,gave,given
@@ -78,7 +80,6 @@ ferver,,,,,,boil,,,,
 fritar,,,,,,fry,fries,,,
 ler,,,,,,read,,,read,read
 escrever,,,,,,write,,,wrote,written
-encontrar,,,,,,find,,,found,
 salvar,,,,,,save,,,,
 esperar,,,,,,wait/expect/hope,,,,
 seguir,,,,,,follow,,,,
@@ -100,3 +101,6 @@ manter,,,,,,keep,,,kept,
 aprender,,,,,,learn,,,,
 deitar,down,from-eng;first-def,,,lying/laying down,lie/lay down,,,lied/laid down,
 rir,,,,,,laugh,,,,
+desenvolver,,,,,,develop,,,,
+conseguir,,,,,,obtain/manage,,,,
+supor,,,,,,assume/suppose,,,,

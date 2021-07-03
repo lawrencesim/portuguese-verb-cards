@@ -32,11 +32,11 @@ TENSE_NAMES = {getattr(TENSE, n): n for n in dir(TENSE) if not n.startswith("_")
 
 DEFAULT_TENSE_WEIGHTS = (
     1, # infinitive
-    4, # present
+    3, # present
     1, # present continuous
     0, # imperfect
     0, # imperfect continuous
-    0, # perfect
+    4, # perfect
     2, # future simple
     0, # future formal
     0, # future conditional

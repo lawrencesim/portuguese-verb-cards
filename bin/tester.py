@@ -258,8 +258,10 @@ def portuguese_to_english(verbs):
         if verbs["tense"] == TENSE.PERFECT:
             if verbs["singular"] and verbs["person"] == PERSON.THIRD:
                 aux_verbs = (("has","had"),)
+                aux_verbs_alt = tuple()
             else:
                 aux_verbs = (("have","had"),)
+                aux_verbs_alt = tuple()
         elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             aux_verbs = (("will",),)
             if verbs["tense"] == TENSE.FUTURE_SIMPLE:
@@ -294,9 +296,10 @@ def portuguese_to_english(verbs):
     if aux_verbs:
         # split words
         response_parts = guess.split(" ")
-        verb_parts = response_parts
         # check against first variation
         for check_aux_verbs in (aux_verbs, aux_verbs_alt):
+            if check_aux_verbs is None:
+                continue
             if len(response_parts)-1 != len(check_aux_verbs):
                 continue
             incorrect = False
