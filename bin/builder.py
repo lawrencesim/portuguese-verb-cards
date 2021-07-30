@@ -55,8 +55,10 @@ def get(infinitive, session=None):
     '''Get tense map using conjugator website and scraping.'''
 
     # open page
+    close_session = False
     if not session:
         session = HTMLSession()
+        close_session = True
     page = session.get(URL.format(infinitive))
     page.html.render()
 
@@ -104,6 +106,10 @@ def get(infinitive, session=None):
             save_as = "participle"
         else:
             save_as = "-"
+
+    page.close()
+    if close_session:
+        session.close()
 
     return tense_maps
 

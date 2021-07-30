@@ -29,10 +29,11 @@ def main():
         page = session.get(builder.URL.format(infinitive))
         page.html.render()
         warning = page.html.find("#warning", first=True)
+        page.close()
+        session.close()
         if warning and warning.text:
             print("Infinitive ({0}) invalid {1}\n{2}".format(infinitive, warning.text, builder.URL.format(infinitive)))
             exit()
-        session = None
 
     # main definition create process in here
     card = create_word(infinitive)

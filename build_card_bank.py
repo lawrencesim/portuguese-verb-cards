@@ -23,24 +23,27 @@ def add_build(add_cards):
 
     print("Building new card bank..")
 
-    # rebuild card bank, starting with populating from existing
-    new_cards = []
-    updated_cards = []
-    new_card_bank = []
-    errored = []
-    for card in card_bank:
-        if card["inf"] not in add_card_map:
-            # no change, just add existing card
-            new_card_bank.append(card)
-        else:
-            # changed, replace with new card definition
-            add_card = add_card_map[card["inf"]]
-            del add_card_map[card["inf"]]
-            _build_card_and_add(add_card, new_card_bank, new_cards, errored, session)
+    try:
+        # rebuild card bank, starting with populating from existing
+        new_cards = []
+        updated_cards = []
+        new_card_bank = []
+        errored = []
+        for card in card_bank:
+            if card["inf"] not in add_card_map:
+                # no change, just add existing card
+                new_card_bank.append(card)
+            else:
+                # changed, replace with new card definition
+                add_card = add_card_map[card["inf"]]
+                del add_card_map[card["inf"]]
+                _build_card_and_add(add_card, new_card_bank, new_cards, errored, session)
 
-    # add all brand new cards
-    for inf, card in add_card_map.items():
-        _build_card_and_add(card, new_card_bank, new_cards, errored, session)
+        # add all brand new cards
+        for inf, card in add_card_map.items():
+            _build_card_and_add(card, new_card_bank, new_cards, errored, session)
+    finally:
+        session.close()
 
     finish_build(new_card_bank, new_cards, updated_cards, errored)
 

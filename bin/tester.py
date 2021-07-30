@@ -11,11 +11,11 @@ def random_parameters(exclude_tenses=None):
         consideration. Note if everything is excluded, then defaults to infintive.
     Returns:
         Dict with verb form parameters.
-        - tense (constants.TENSE): Verb tense. Weighted to strongly prefer present tense over infinitive and 
-          present-continuous.
+        - tense (constants.TENSE): Verb tense. Weighted to prefer certain tenses.
         - singular (bool): True if singular form, False if plural.
         - person (constants.PERSON): Person. Weighted to prefer, from most to least, 3rd, 1st, 2nd. Note 3rd 
-          form can result in Portuguese 'você[s]' in returned pronouns.
+          form can result in Portuguese 'você[s]' in returned pronouns, which in to-English questions must be 
+          translated to 2nd person.
     '''
     tense_weights = list(DEFAULT_TENSE_WEIGHTS)
     if exclude_tenses:
