@@ -14,8 +14,8 @@ usar,,,,,,use,,,,
 beber,,,,,,drink,,,drank,drunk
 tomar,consume or utilize,from-eng;first-def,1,,,take/use/drink,takes/uses/drinks,,took/used/drank,taken/used/drunk
 pegar,obtain,from-eng,,,,take,,,took,taken
-trazer,from present location,from-eng,1,,,take/bring,,,took/brought,taken/brought
-levar,to present location,from-eng,1,,,bring/take,,,brought/took,brought/taken
+trazer,to present location,from-eng,1,,,take/bring,,,took/brought,taken/brought
+levar,from present location,from-eng,1,,,bring/take,,,brought/took,brought/taken
 entender,,,,,,understand,,,understood,
 saber,as a fact,from-eng,,,,know,,,knew,known
 conhecer,a person/place/thing,from-eng;first-def,,,,know/meet,,,knew/met,known/met
@@ -29,7 +29,7 @@ perguntar,a question,from-eng;first-def,,,,ask/question,,,,
 pedir,for something,from-eng;first-def,,,,ask/order,,,,
 chegar,,,,,,arrive,,,,
 vir,,,,,,come,,,came,come
-voltar,,,,,,come back,,,came back,come back
+voltar,,,,,,come back/return,,,came back/returned,come back/returned
 ir,,,,,,go,goes,,went,gone
 partir,leave,from-eng;first-def,,,,go/leave/depart,goes/leaves/departs,,went/left/departed,gone/left/departed
 sair,outward,from-eng;first-def,,,,leave/go out,leaves/goes out,,left/went out,left/gone out
@@ -59,7 +59,7 @@ tentar,,,,,,try/attempt,tries/attempts,,,
 provar,,,,,,prove/taste/try,proves/tastes/tries,,,
 deitar,down,from-eng;first-def,,,lying/laying down,lie/lay down,,,lied/laid down,
 mentir,tell,from-eng,,,lying,lie,,,,
-pagar,,,,,,pay,,,,
+pagar,,,,,,pay,,,paid,
 esquecer,,,,,,forget,,,forgot,forgotten
 decidir,,,,,,decide,,,,
 medir,,,,,,measure,,,,
@@ -92,7 +92,7 @@ esperar,,,,,,wait/expect/hope,,,,
 seguir,,,,,,follow,,,,
 desculpar,,,,,,forgive,,,forgave,forgiven
 mudar,,,,,,change,,,,
-parar,,,,,stopping,stop,,,,
+parar,,,,,stopping,stop,,,stopped,
 ligar,phone,from-eng;first-def,,,,call/phone/turn on,,,,
 desligar,,,,,,turn off,,,,
 nadar,,,,,swimming/bathing,swim/bathe,,,swam/bathed,
@@ -165,3 +165,10 @@ observar,,,,,,observe,,,,
 acordar,,,,,,wake/wake up,,,woke/woke up,woken/woken up
 entregar,,,,,,deliver,,,,
 arrumar,,,,,,arrange/organize/tidy,arranges/organizes/tidies,,,
+enviar,,,,,sending/submitting/shipping,send/submit/ship,,,sent/submitted/shipped,
+lembrar,,,,,,remember,,,,
+reclamar,,,,,,complain/demand,,,,
+reconhecer,,,,,,recognize,,,,
+recuperar,,,,,,recover,,,,
+repetir,,,,,,repeat,,,,
+defender,,,,,,defend,,,,

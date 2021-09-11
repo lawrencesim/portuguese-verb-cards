@@ -248,11 +248,11 @@ class CardBank:
                 singular = True
 
         verbs = {
-            "person": person, 
-            "singular": singular, 
-            "plural": not singular, 
-            "tense": tense, 
-            "english": {}, 
+            "person":     person, 
+            "singular":   singular, 
+            "plural":     not singular, 
+            "tense":      tense, 
+            "english":    {}, 
             "portuguese": {}
         }
         pronouns = None
@@ -286,6 +286,12 @@ class CardBank:
 
         verbs["english"]["infinitive"] = card["eng-inf"]
         verbs["english"]["verbs"] = self.get_english_verb(card, person=person, singular=singular, tense=tense)
+        if tense == TENSE.PERFECT:
+            # for "had ---" form
+            verbs["english"]["verbs-past-alt"] = card["eng-past-perf"]
+        elif tense == TENSE.IMPERFECT:
+            # for "used to ---" form
+            verbs["english"]["verbs-past-alt"] = card["eng-inf"]
         verbs["english"]["pronoun"] = pronouns["english"]
 
         verbs["hint"] = card["hint"]
@@ -404,33 +410,6 @@ class CardBank:
             if person == PERSON.THIRD:
                 return card["eng-3"]
 
-        elif tense >= TENSE.FUTURE_SIMPLE and tense <= TENSE.FUTURE_COND:
-            # future always uses singular forms
-            # aux. verbs will be checked elsewhere for future tenses (will/would)
-            # special case for 'to be' or 'to be able'
-            if card["inf"] in ("ser", "estar", "poder"):
-                return card["eng-inf"]
-            else:
-                return card["eng-1"]
-
-        elif tense == TENSE.IMPERFECT:
-            if not singular or person == PERSON.SECOND:
-                forms = list(card["eng-past"])
-                # special case cause only one instance I know where past singular/plural differs
-                for i, form in enumerate(forms):
-                    words = form.split(" ")
-                    for j, word in enumerate(words):
-                        if word == "is":
-                            words[j] = "are"
-                        elif word == "are":
-                            words[j] = "were"
-                    forms[i] = " ".join(words)
-            return tuple(forms)
-
-        elif tense == TENSE.PERFECT:
-            # aux. verb will be checked elsewhere for perfect tense (had)
-            return card["eng-past-perf"]
-
         elif tense == TENSE.PRESENT_CONTINUOUS:
             # aux. verb required, e.g. "am/is/are eating"
             if not singular or person == PERSON.SECOND:
@@ -449,29 +428,41 @@ class CardBank:
                     for gerund in card["eng-gerund"]
                 )
 
-        elif tense == TENSE.IMPERFECT_CONTINUOUS:
-            # aux. verb required, e.g. "was/were working"
+        elif tense >= TENSE.FUTURE_SIMPLE and tense <= TENSE.FUTURE_COND:
+            # future always uses singular forms
+            # aux. verbs will be checked elsewhere for future tenses (will/would)
+            # special case for 'to be' or 'to be able'
+            if card["inf"] in ("ser", "estar", "poder"):
+                return card["eng-inf"]
+            else:
+                return card["eng-1"]
+
+        elif tense == TENSE.PERFECT or tense == TENSE.IMPERFECT:
+            # Both imperfect and perfect tenses uses simple past by default. Special handling needed for 
+            # alternative perfect form of "had ---" (with past perfect) and alternative imperfect form of 
+            # "used to ---" (with infinitive).
             if not singular or person == PERSON.SECOND:
-                return tuple(
-                    "{0} {1}".format(self.estar_card["eng-past-p"][0], gerund)
-                    for gerund in card["eng-gerund"]
-                )
-            if person == PERSON.FIRST:
-                return tuple(
-                    "{0} {1}".format(self.estar_card["eng-past-1"][0], gerund)
-                    for gerund in card["eng-gerund"]
-                )
-            if person == PERSON.THIRD:
-                return tuple(
-                    "{0} {1}".format(self.estar_card["eng-past-3"][0], gerund)
-                    for gerund in card["eng-gerund"]
-                )
+                forms = list(card["eng-past"])
+                # special case cause only one instance I know where past singular/plural differs
+                for i, form in enumerate(forms):
+                    words = form.split(" ")
+                    for j, word in enumerate(words):
+                        if word == "is":
+                            words[j] = "are"
+                        elif word == "are":
+                            words[j] = "were"
+                    forms[i] = " ".join(words)
+                return tuple(forms)
+            return card["eng-past"]
+
+        elif tense == TENSE.IMPERFECT_CONTINUOUS:
+            # aux. verb required, e.g. "was/were"
+            if not singular or person == PERSON.SECOND:
+                return tuple("were {0}".format( gerund) for gerund in card["eng-gerund"])
+            return tuple("was {0}".format(gerund) for gerund in card["eng-gerund"])
 
         elif tense == TENSE.IMPERATIVE_AFM or tense == TENSE.IMPERATIVE_NEG:
             # aux. verb will be checked elsewhere (must/must not/should/should not)
             return card(["eng-p"])
 
-        else:
-            raise Exception("{0} tense currently unsupported for english".format(TENSE_NAMES[tense]))
-
-        raise Exception("Unknown person given")
+        raise Exception("{0} tense currently unsupported for english".format(TENSE_NAMES[tense]))

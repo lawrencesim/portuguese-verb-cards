@@ -13,70 +13,103 @@ def main(options=None):
     default_exclude_tenses = []
     if "tense" in options:
         try:
-            default_tense_group = getattr(TENSE_GROUPS, options["tense"].upper())
+            default_tense_group = []
+            for tense in options["tense"]:
+                if tense == "future":
+                    default_tense_group += TENSE_GROUPS.FUTURE_SIMPLE
+                    default_tense_group += TENSE_GROUPS.FUTURE_FORMAL
+                    default_tense_group += TENSE_GROUPS.FUTURE_COND
+                    continue
+                elif tense == "past":
+                    default_tense_group += TENSE_GROUPS.PERFECT
+                    default_tense_group += TENSE_GROUPS.IMPERFECT
+                    default_tense_group += TENSE_GROUPS.IMPERFECT_CONTINUOUS
+                    continue
+                elif tense == "imperative":
+                    default_tense_group += TENSE_GROUPS.IMPERATIVE_AFM
+                    default_tense_group += TENSE_GROUPS.IMPERATIVE_NEG
+                    continue
+                default_tense_group += getattr(TENSE_GROUPS, tense.strip().upper())
+                if tense == "present":
+                    default_tense_group += TENSE_GROUPS.PRESENT_CONTINUOUS
+                elif tense == "imperect":
+                    default_tense_group += TENSE_GROUPS.IMPERFECT_CONTINUOUS
+            default_tense_group = tuple(set(default_tense_group))
         except:
-            raise Exception("Bad argument. Tense group '{0}' is invalid.".format(options["tense"]))
+            raise Exception("Bad argument. Could not understand or recognize given tenses: {0}".format(", ".join(options["tense"])))
         default_exclude_tenses = [tense for tense in TENSE_VALUES if tense not in default_tense_group]
 
     # option to set num of questions
-    num_questions = 2
-    if default_tense_group == TENSE_GROUPS.INFINITIVE:
+    num_questions = 3
+    if default_tense_group and len(default_tense_group) == 1 and default_tense_group[0] == TENSE_GROUPS.INFINITIVE:
         num_questions = 1
     elif "num-questions" in options:
-        num_questions = int(options["num-questions"])
+        num_questions = int(options["num-questions"][0])
         if num_questions < 1:
             raise Exception("Bad argument. Number of questions must be at least 1.")
 
     # read card bank
     bank = CardBank("bank/card-bank-built.csv", "bank/card-bank-similar.csv")
 
-    # ask number of words to test
-    num_cards = len(bank)
-    num_tests = ask.integer(
-        question="Number of words to test? ({0} questions per word) > ".format(num_questions), 
-        same_line=True, 
-        positive=True, 
-        nonzero=True, 
-        maxvalue=num_cards
-    )
+    test_cards = []
+
+    # option to limit words
+    if "words" in options:
+        for inf in options["words"]:
+            try:
+                test_cards.append(bank[inf])
+            except:
+                print("Unrecognized word option: {0}".format(inf))
+        num_tests = len(test_cards)
+
+    # otherwise get cards by random shuffle
+    else:
+        # ask number of words to test
+        num_cards = len(bank)
+        num_tests = ask.integer(
+            question="Number of words to test? ({0} questions per word) > ".format(num_questions), 
+            same_line=True, 
+            positive=True, 
+            nonzero=True, 
+            maxvalue=num_cards
+        )
+
+        all_card_indices = range(0, num_cards)
+        test_card_indices = random.sample(all_card_indices, k=num_tests)
+
+        # add a few similars to test common mixups
+        test_infs = []
+        similars = []
+        start_similars_at = math.ceil(num_tests*0.85)-1
+        for n, i in enumerate(test_card_indices):
+            card = None
+            # add a few similars in the end, if applicable
+            if n >= start_similars_at and len(similars):
+                group = None
+                while len(similars) and (not group or not len(group)):
+                    # pop off earliest group, clean up redundants
+                    group = [inf for inf in similars.pop(0) if inf not in test_infs]
+                if group and len(group):
+                    card = bank[random.choice(group)]
+            # if no similars, add from random list, add its similars
+            if not card:
+                card = bank[i]
+                # special case to exclude (pick random replacement)
+                if default_tense_group == TENSE_GROUPS.INFINITIVE and card["inf"] == "poder":
+                    card = None
+                    ibreak = 100
+                    while not card and ibreak > 0:
+                        i = random.choice(all_card_indices)
+                        ibreak -= 1
+                        if i not in test_card_indices and bank[i]["inf"] not in test_infs:
+                            card = bank[i]
+                if "similars" in card and len(card["similars"]):
+                    similars.append(card["similars"])
+            # add card
+            test_cards.append(card)
+            test_infs.append(card["inf"])
 
     print("")
-
-    # get cards
-    all_card_indices = range(0, num_cards)
-    test_card_indices = random.sample(all_card_indices, k=num_tests)
-    test_cards = []
-    test_infs = []
-    # add a few similars to test common mixups
-    similars = []
-    start_similars_at = math.ceil(num_tests*0.85)-1
-    for n, i in enumerate(test_card_indices):
-        card = None
-        # add a few similars in the end, if applicable
-        if n >= start_similars_at and len(similars):
-            group = None
-            while len(similars) and (not group or not len(group)):
-                # pop off earliest group, clean up redundants
-                group = [inf for inf in similars.pop(0) if inf not in test_infs]
-            if group and len(group):
-                card = bank[random.choice(group)]
-        # if no similars, add from random list, add its similars
-        if not card:
-            card = bank[i]
-            # special case to exclude (pick random replacement)
-            if default_tense_group == TENSE_GROUPS.INFINITIVE and card["inf"] == "poder":
-                card = None
-                ibreak = 100
-                while not card and ibreak > 0:
-                    i = random.choice(all_card_indices)
-                    ibreak -= 1
-                    if i not in test_card_indices and bank[i]["inf"] not in test_infs:
-                        card = bank[i]
-            if "similars" in card and len(card["similars"]):
-                similars.append(card["similars"])
-        # add card
-        test_cards.append(card)
-        test_infs.append(card["inf"])
 
     # reshuffle
     random.shuffle(test_cards)
@@ -88,8 +121,9 @@ def main(options=None):
         "redo": []
     }
     for n, card in enumerate(test_cards):
-        to_english = bool(random.getrandbits(1))
-        exclude_tenses = tester.get_exclude_tenses(card, default_exclude_tenses[:])
+        # first may or may not be to-english, unless more than 2 questions, then always start to-english
+        to_english = True if num_questions > 2 else bool(random.getrandbits(1))
+        exclude_tenses = tester.get_exclude_tenses(card, default_exclude_tenses)
 
         print("Word {0} of {1}:".format(n+1, num_tests))
 
@@ -98,6 +132,12 @@ def main(options=None):
         params = False
         redo = False
         for j in range(num_questions):
+            #  if more than 3 questions, can test to-english again, otherwise never, and never successively
+            if j > 0:
+                if to_english or num_questions <= 3:
+                    to_english = False
+                elif num_questions > 3:
+                    to_english = bool(random.getrandbits(1))
             # make sure we're not excluding everything..
             if len(exclude_tenses) == len(TENSE_VALUES):
                 exclude_tenses = default_exclude_tenses[:]
@@ -124,7 +164,7 @@ def main(options=None):
             # don't retest infinitive tense in any case
             if params["tense"] == TENSE.INFINITIVE:
                 exclude_tenses.append(params["tense"])
-            # don't retest in portuguese-to-english format in any case
+            # don't retest to-english twice in a row
             if to_english:
                 to_english = False
 
@@ -215,6 +255,7 @@ if __name__ == "__main__":
     args = {}
     rename = {
         "h": "help", 
+        "w": "words", 
         "t": "tense", 
         "n": "num-questions", 
         "s": "skip-retest"
@@ -222,16 +263,14 @@ if __name__ == "__main__":
     in_arg = None
     for arg in sys.argv[1:]:
         if arg.startswith("-"):
-            if in_arg:
-                args[in_arg] = True
             in_arg = arg.lstrip("-").rstrip()
             if in_arg in rename:
                 in_arg = rename[in_arg]
+            args[in_arg] = True
         else:
-            args[in_arg] = arg.strip()
-            in_arg = None
-    if in_arg:
-        args[in_arg] = True
+            if not isinstance(args[in_arg], list):
+                args[in_arg] = []
+            args[in_arg].append(arg.strip())
     if "help" in args:
         print("""
 ------------------------------------------------------------------------------
@@ -254,12 +293,14 @@ are prefixed by a hyphen. Parameters that require a value should be follow by
 the value passed as that parameter.
 
     -h | -help          What you're using right now! Shows help information.
+    -w | -words         To limit testing to specific words. Use the Portuguese
+                        infinitive forms, separated by spaces.
     -t | -tense         To limit testing to a specific tense, follow with the 
-                        tense group name. Recognized values are 'infinitive', 
-                        'present', 'future', 'past', 'imperfect', 'perfect', 
-                        and 'imperative'.
+                        tense group names separated by spaces. Recognized 
+                        values are 'infinitive', 'present', 'future', 'past', 
+                        'imperfect', 'perfect', and 'imperative'.
     -n | -num-questions Default num. of questions per word (not including  
-                        retest section) is two. Use this to increase or 
+                        retest section) is three. Use this to increase or 
                         decrease.
     -s | -skip-retest   Add this parameter to skip the retest portion.
 """)

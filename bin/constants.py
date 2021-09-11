@@ -34,14 +34,14 @@ DEFAULT_TENSE_WEIGHTS = (
     1, # infinitive
     3, # present
     1, # present continuous
-    0, # imperfect
-    0, # imperfect continuous
-    4, # perfect
+    3, # imperfect
+    1, # imperfect continuous
+    3, # perfect
     2, # future simple
-    0, # future formal
-    0, # future conditional
-    0, # imperative negative
-    0  # imperative affirmative
+    0, # future formal (NOT LEARNED)
+    0, # future conditional (NOT LEARNED)
+    0, # imperative negative (NOT LEARNED)
+    1  # imperative affirmative
 )
 
 TENSE_GROUPS = SimpleNamespace(
@@ -50,7 +50,7 @@ TENSE_GROUPS = SimpleNamespace(
     FUTURE=(TENSE.FUTURE_SIMPLE, TENSE.FUTURE_FORMAL, TENSE.FUTURE_COND), 
     PAST=(TENSE.IMPERFECT, TENSE.IMPERFECT_CONTINUOUS, TENSE.PERFECT), 
     IMPERFECT=(TENSE.IMPERFECT, TENSE.IMPERFECT_CONTINUOUS), 
-    PERFECT=(TENSE.PERFECT), 
+    PERFECT=(TENSE.PERFECT,), 
     IMPERATIVE=(TENSE.IMPERATIVE_NEG, TENSE.IMPERATIVE_AFM), 
 )
 

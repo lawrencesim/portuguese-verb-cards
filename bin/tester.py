@@ -32,7 +32,7 @@ def random_parameters(exclude_tenses=None):
             "person": PERSON.FIRST
         }
     singular = bool(random.getrandbits(1))
-    pweights = [2,1,3]
+    pweights = [3,1,4]
     # 1st person singular imperative doesn't make sense
     if singular and (tense == TENSE.IMPERATIVE_AFM or tense == TENSE.IMPERATIVE_NEG):
         pweights[0] = 0
@@ -72,15 +72,12 @@ def get_exclude_tenses(card, append_to=None):
     Returns:
         List of tenses to exclude.
     '''
-    exclude_tenses = append_to if append_to else []
+    exclude_tenses = append_to[:] if append_to else []
     add_exclude = []
 
     # imperative doesn't make sense with 'to be able' (e.g. 'he must can')
     if card["inf"] == "poder":
         add_exclude = [TENSE.IMPERATIVE_AFM, TENSE.IMPERATIVE_NEG]
-    # while technically possible, just awkward (e.g. 'I had had')
-    elif card["inf"] == "ter" or card["inf"] == "haver":
-        add_exclude = [TENSE.PERFECT]
 
     for exclude in add_exclude:
         if exclude not in exclude_tenses:
@@ -129,7 +126,7 @@ def _question(verbs, to_english, dont_check_similars=False):
         if to_english or result["guess"] in result["answers"]:
             print("Correct!")
         else:
-            print("Correct! But mind the accent(s): {0}".format(answer_formatted(verbs, to_english)))
+            print("Correct! But mind the accent(s): {0}".format(answer_formatted(verbs, result["answers"], to_english)))
         return result
     
     if not to_english and not dont_check_similars and "similars" in verbs["portuguese"]:
@@ -146,7 +143,7 @@ def _question(verbs, to_english, dont_check_similars=False):
             print("Check the hint (if available) and try again!")
             return _question(verbs, to_english, dont_check_similars=True)
 
-    print("Wrong! The answer is: " + answer_formatted(verbs, to_english))
+    print("Wrong! The answer is: " + answer_formatted(verbs, result["answers"], to_english))
     return result
 
 
@@ -163,8 +160,13 @@ def english_to_portuguese(verbs):
         - guess (str): User inputted guess (stripped and lowercased).
         - correct (bool): Whether answer was accepted.
     '''
+    # get english verb forms
+    if verbs["tense"] == TENSE.IMPERFECT:
+        # use "used (infinitive)" form of imperfect (e.g. used to be)
+        pick_from = verbs["english"]["infinitive"]
+    else:
+        pick_from = verbs["english"]["verbs"]
     # certain english definitions are for answers only, remove from question construction choices
-    pick_from = verbs["english"]["verbs"]
     if verbs["use-eng-defs"] and verbs["use-eng-defs"] < len(pick_from):
         pick_from = pick_from[:verbs["use-eng-defs"]]
     qverb = pick_one(pick_from)
@@ -173,7 +175,7 @@ def english_to_portuguese(verbs):
     if verbs["hint"] and "from-eng" in verbs["hint-rules"]:
         # check index-selective rules
         index_selective = False
-        qindex = verbs["english"]["verbs"].index(qverb)
+        qindex = pick_from.index(qverb)
         for i, order in enumerate(("first", "second", "third")):
             if "{0}-def".format(order) in verbs["hint-rules"]:
                 index_selective = True
@@ -190,8 +192,16 @@ def english_to_portuguese(verbs):
     if verbs["tense"] == TENSE.INFINITIVE:
         prefix = ["to"]
         answer_prefix = False
+    elif verbs["tense"] == TENSE.IMPERFECT:
+        # use "used to ---" (with infinitive) form of imperfect
+        prefix.append("used to")
+        qverb = pick_one(verbs["english"]["verbs-past-alt"])
     elif verbs["tense"] == TENSE.PERFECT:
-        prefix.append("had")
+        # use "had ---" (with past perfect) form of perfect
+        # prevent special, weird case of had-had
+        if verbs["portuguese"]["infinitive"] not in ("ter", "haver"):
+            prefix.append("had")
+        qverb = pick_one(verbs["english"]["verbs-past-alt"])
     elif verbs["tense"] == TENSE.FUTURE_SIMPLE:
         if not verbs["singular"] or verbs["person"] == PERSON.SECOND:
             prefix.append("are")
@@ -247,21 +257,27 @@ def portuguese_to_english(verbs):
 
     aux_verbs = None
     aux_verbs_alt = None
+    special_case_past = False # for possible alternate forms ("had ---" or "used to ---")
 
     if verbs["tense"] == TENSE.INFINITIVE:
         prompt = "{0} {1}> to ".format(
             verbs["portuguese"]["infinitive"], 
             "({0}) ".format(verbs["hint"]) if show_hint else ""
         )
-
     else:
-        if verbs["tense"] == TENSE.PERFECT:
+        if verbs["tense"] == TENSE.IMPERFECT:
+            special_case_past = True
+            special_case_aux = "used to"
+            aux_verbs = tuple()
+            aux_verbs_alt = (("used",),("to",))
+        elif verbs["tense"] == TENSE.PERFECT:
+            special_case_past = True
+            special_case_aux = "had"
+            aux_verbs = tuple()
             if verbs["singular"] and verbs["person"] == PERSON.THIRD:
-                aux_verbs = (("has","had"),)
-                aux_verbs_alt = tuple()
+                aux_verbs_alt = (("has","had"),)
             else:
-                aux_verbs = (("have","had"),)
-                aux_verbs_alt = tuple()
+                aux_verbs_alt = (("have","had"),)
         elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             aux_verbs = (("will",),)
             if verbs["tense"] == TENSE.FUTURE_SIMPLE:
@@ -289,6 +305,15 @@ def portuguese_to_english(verbs):
         
     guess = ask.basic(question=prompt, same_line=True, allow_empty=False)
 
+    if special_case_past:
+        answers = []
+        for i in range(len(verbs["english"]["verbs"])):
+            aform = verbs["english"]["verbs"][i]
+            aform += " / {0} {1}".format(special_case_aux, verbs["english"]["verbs-past-alt"][i])
+            answers.append(aform)
+    else:
+        answers = verbs["english"]["verbs"]
+
     correct = False
     if not aux_verbs:
         # no aux. verbs, just compare raw answer
@@ -296,11 +321,11 @@ def portuguese_to_english(verbs):
     if aux_verbs:
         # split words
         response_parts = guess.split(" ")
-        # check against first variation
+        # check against aux verbs
         for check_aux_verbs in (aux_verbs, aux_verbs_alt):
-            if check_aux_verbs is None:
-                continue
-            if len(response_parts)-1 != len(check_aux_verbs):
+            if check_aux_verbs is None or len(response_parts)-1 != len(check_aux_verbs):
+                # special cases for imperfect and perfect, only matches with first set of aux verbs
+                special_case_past = False
                 continue
             incorrect = False
             for i, words_at_loc in enumerate(check_aux_verbs):
@@ -313,20 +338,24 @@ def portuguese_to_english(verbs):
                 break
         # finally check verb itself without aux. verbs
         if correct:
-            correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts))
+            if special_case_past:
+                # imperfect special case matches against infintive
+                correct = compare_faster(verbs["english"]["verbs-past-alt"], " ".join(response_parts))
+            else:
+                correct = compare_faster(verbs["english"]["verbs"], " ".join(response_parts))
 
     return {
         "person":   verbs["person"], 
         "singular": verbs["singular"], 
         "plural":   verbs["plural"], 
         "tense":    verbs["tense"], 
-        "answers":  verbs["english"]["verbs"], 
+        "answers":  answers, 
         "guess":    guess, 
         "correct":  correct
     }
 
 
-def answer_formatted(verbs, to_english):
+def answer_formatted(verbs, answers, to_english):
     '''Format answer for printing.
     Params:
         verbs (dict): Verbs dictionary definition. See `cardbank.get_verbs()`.
@@ -338,8 +367,6 @@ def answer_formatted(verbs, to_english):
         prefix = verbs["english"]["pronoun"]
         if verbs["tense"] == TENSE.INFINITIVE:
             prefix = "to"
-        elif verbs["tense"] == TENSE.PERFECT:
-            prefix += " had"
         elif verbs["tense"] == TENSE.FUTURE_SIMPLE or verbs["tense"] == TENSE.FUTURE_FORMAL:
             prefix += " will"
         elif verbs["tense"] == TENSE.FUTURE_COND:
@@ -348,9 +375,9 @@ def answer_formatted(verbs, to_english):
             prefix += " should"
         elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
             prefix += " should not"
-        return "{0} {1}".format(prefix, " (or) ".join(verbs["english"]["verbs"]))
+        return "{0} {1}".format(prefix, " (or) ".join(answers))
     else:
-        corrects = " (or) ".join(verbs["portuguese"]["verbs"])
+        corrects = " (or) ".join(answers)
         if verbs["tense"] == TENSE.INFINITIVE:
             return corrects
         elif verbs["tense"] == TENSE.IMPERATIVE_NEG:
